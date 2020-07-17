@@ -1,3 +1,4 @@
+mod html;
 use clap::{Arg, App};
 use toml;
 
@@ -69,4 +70,7 @@ fn main() {
     let site_cfg = site_cfg.fill_empty();
 
     println!("{:#?}", site_cfg);
+
+    println!("{}", html::generate_head("afmck.in".to_string(), "styles/style.css".to_string()));
+
 }
