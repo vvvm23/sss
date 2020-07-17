@@ -1,4 +1,3 @@
-mod config;
 use clap::{Arg, App};
 use toml;
 
@@ -7,34 +6,43 @@ extern crate serde_derive;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct HeaderLink {
-    name: Option<String>,
-    url: Option<String>,
+    name: Option<String>, // display name for link
+    url: Option<String>, // actual target for link
 }
 
 #[derive(Debug, Serialize, Deserialize)]
 struct SiteConfig {
-    title: Option<String>,
-    header_links: Option<Vec<HeaderLink>>,
-    index_path: Option<String>,
-    style_path: Option<String>,
-    page_dir: Option<String>,
-    pub_dir: Option<String>,
+    title: Option<String>, // site title, will appear in header and in browser title
+    header_links: Option<Vec<HeaderLink>>, // array of links in the header
+    index_path: Option<String>, // path to index.md file that will be compiled and placed in $pub_dir/index.html
+    style_path: Option<String>, // path to style.css file that was be copied to $pub_dir/styles/style.css
+    page_dir: Option<String>, // path to directory containing markdown files for pages
+    pub_dir: Option<String>, // path to output directory where resulting website is placed
 }
 
 impl SiteConfig {
     fn fill_empty(&mut self) -> &mut Self {
         // Populate missing .toml entries with some defaults
-        if let None = self.title { self.title = Some("Default Site Title".to_string()) }
-        if let None = self.header_links { self.header_links = Some(Vec::new()) }
-        if let None = self.index_path { self.index_path = Some("pages/index.md".to_string()) }
-        if let None = self.style_path { self.style_path = Some("styles/style.css".to_string()) }
-        if let None = self.page_dir { self.page_dir = Some("pages/".to_string()) }
-        if let None = self.pub_dir { self.pub_dir = Some("public/".to_string()) }
+        // TODO: Use proper path constructors
+        if let None = self.title { self.title = Some("Default Site Title".to_string()) } // default to "Default Site Title"
+        if let None = self.header_links { self.header_links = Some(Vec::new()) } // defaults to empty vec
+        if let None = self.page_dir { self.page_dir = Some("pages/".to_string()) } // defaults to pages/
+        if let None = self.index_path { self.index_path = Some(format!("{}{}", // defaults to $pub_dir/index.md
+           match &self.page_dir {
+               Some(c) => c,
+               None => panic!()
+           },
+           "index.md"
+           )) }
+
+        if let None = self.style_path { self.style_path = Some("styles/style.css".to_string()) } // defaults to styles/style.css
+        if let None = self.pub_dir { self.pub_dir = Some("public/".to_string()) } // defaults to public/
         self
     }
 }
 
 fn main() {
+    // Define command line arguments
     let matches = App::new("Simple Static Sites")
         .version("0.1-alpha")
         .author("Alexander McKinney <alexander.f.mckinney@durham.ac.uk>")
@@ -47,11 +55,13 @@ fn main() {
         )
         .get_matches();
 
+    // Example of argument evaluation
     match matches.value_of("test") {
         Some(v) => println!("{}", v),
         None => println!("No argument.")
     }
 
+    // Read in sss-config.toml and deserialise into struct
     let site_cfg_raw = std::fs::read_to_string("sss-config.toml")
         .expect("Failed to read file.");
     println!("{:?}", site_cfg_raw);
