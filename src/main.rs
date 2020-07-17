@@ -13,5 +13,8 @@ fn main() {
         )
         .get_matches();
 
-    println!("{:}", matches);
+    match matches.value_of("test") {
+        Some(v) => println!("{}", v),
+        None => println!("No argument.")
+    }
 }
