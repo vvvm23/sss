@@ -1,3 +1,5 @@
+use crate::cfg::{HeaderLink, SiteConfig};
+
 pub fn generate_head(title: String, style_path: String) -> String {
     // TODO: Optional highlight.js
     format!("<head>\
@@ -10,3 +12,5 @@ pub fn generate_head(title: String, style_path: String) -> String {
         </head>\
     ", title, style_path)
 }
+
+//pub fn generate_header(title: String, links: )
