@@ -6,18 +6,18 @@ use toml;
 extern crate serde_derive;
 
 #[derive(Debug, Serialize, Deserialize)]
-struct SiteConfig {
-    title: String,
-    style_path: String,
+struct HeaderLink {
+    name: Option<String>,
+    url: Option<String>,
 }
 
-impl Default for SiteConfig {
-    fn default() -> Self {
-        SiteConfig {
-            title: "Default Site".to_string(),
-            style_path: "style/style.css".to_string(),
-        }
-    }
+#[derive(Debug, Serialize, Deserialize)]
+struct SiteConfig {
+    title: Option<String>,
+    header_links: Option<Vec<HeaderLink>>,
+    index_path: Option<String>,
+    style_path: Option<String>,
+    page_dir: Option<String>,
 }
 
 fn main() {

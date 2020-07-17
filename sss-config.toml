@@ -1,2 +1,13 @@
 title = "afmck.in"
 style_path = "style/style.css"
+page_dir = "pages/"
+index_path = "pages/index.md"
+
+[[header_links]]
+name = "GitHub"
+url = "https://github.com/vvvm23"
+
+[[header_links]]
+name = "Twitter"
+url = "https://twitter.com/alexfmckinney"
+
