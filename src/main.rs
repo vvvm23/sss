@@ -39,5 +39,9 @@ fn main() {
     println!("{:#?}", site_cfg);
 
     println!("{}", html::generate_head("afmck.in".to_string(), "styles/style.css".to_string()));
-
+    println!("{}", html::generate_header("afmck.in".to_string(), vec![
+        HeaderLink { name: Some("GitHub".to_string()), url: Some("https://github.com/vvvm23".to_string()) },
+        HeaderLink { name: Some("Twitter".to_string()), url: Some("https://twitter.com/alexfmckinney".to_string()) }
+    ]));
+    println!("{}", html::generate_content("posts/index.md".to_string()));
 }
