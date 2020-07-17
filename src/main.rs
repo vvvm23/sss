@@ -18,6 +18,20 @@ struct SiteConfig {
     index_path: Option<String>,
     style_path: Option<String>,
     page_dir: Option<String>,
+    pub_dir: Option<String>,
+}
+
+impl SiteConfig {
+    fn fill_empty(&mut self) -> &mut Self {
+        // Populate missing .toml entries with some defaults
+        if let None = self.title { self.title = Some("Default Site Title".to_string()) }
+        if let None = self.header_links { self.header_links = Some(Vec::new()) }
+        if let None = self.index_path { self.index_path = Some("pages/index.md".to_string()) }
+        if let None = self.style_path { self.style_path = Some("styles/style.css".to_string()) }
+        if let None = self.page_dir { self.page_dir = Some("pages/".to_string()) }
+        if let None = self.pub_dir { self.pub_dir = Some("public/".to_string()) }
+        self
+    }
 }
 
 fn main() {
@@ -41,6 +55,8 @@ fn main() {
     let site_cfg_raw = std::fs::read_to_string("sss-config.toml")
         .expect("Failed to read file.");
     println!("{:?}", site_cfg_raw);
-    let site_cfg: SiteConfig = toml::from_str(&site_cfg_raw).unwrap();
-    println!("{:?}", site_cfg);
+    let mut site_cfg: SiteConfig = toml::from_str(&site_cfg_raw).unwrap();
+    let site_cfg = site_cfg.fill_empty();
+
+    println!("{:#?}", site_cfg);
 }
