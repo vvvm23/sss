@@ -22,13 +22,24 @@ pub enum MDComponent {
     CodeBlock(String),
 }
 
-
+/// Accepts path to markdown file and returns Vec<MDComponent> representing the file
 pub fn parse_md_file(path: &str) -> std::io::Result<()> {
     let f = File::open(path)?;
     let f = BufReader::new(f);
 
-    for line in f.lines() {
-        println!("{}", line.unwrap());
+    for (i, line) in f.lines().enumerate() {
+        let line = line.unwrap().to_string();
+        let mut line_chars = line.chars();
+        
+        let c = line_chars.next();
+
+        match c {
+            Some('#') => println!("HEADER"),
+            Some(' ') => println!("CODE"), // needs 4 spaces, not a tab
+            None => println!("Empty Line"),
+            _ => println!("Unknown."),
+        }
+
     }
 
     Ok(())
