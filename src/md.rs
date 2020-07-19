@@ -10,10 +10,26 @@
 ///     - Code blocks, (indented code blocks)
 ///
 
+use std::io::BufReader;
+use std::fs::File;
+use std::io::prelude::*;
+
 pub enum MDComponent {
     Heading(u8, String),
     Paragraph(String),
     Image(String),
     Hyperlink(String),
     CodeBlock(String),
-};
+}
+
+
+pub fn parse_md_file(path: &str) -> std::io::Result<()> {
+    let f = File::open(path)?;
+    let f = BufReader::new(f);
+
+    for line in f.lines() {
+        println!("{}", line.unwrap());
+    }
+
+    Ok(())
+}
