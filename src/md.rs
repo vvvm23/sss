@@ -39,12 +39,12 @@ fn parse_heading(text: &mut std::str::Chars) -> MDComponent {
     MDComponent::Heading(depth, text.take_while(|x| *x != '#').collect())
 }
 
-fn parse_code(text: String) -> MDComponent {
-    MDComponent::CodeBlock(text)
+fn parse_code(text: &String) -> MDComponent {
+    MDComponent::CodeBlock(text.to_string())
 }
 
-fn parse_paragraph(text: String) -> MDComponent {
-    MDComponent::Paragraph(text)
+fn parse_paragraph(text: &String) -> MDComponent {
+    MDComponent::Paragraph(text.to_string())
 }
 
 /// Accepts path to markdown file and returns Vec<MDComponent> representing the file
@@ -64,12 +64,28 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
         let md_c = match c {
             // A bit dirty..
-            Some('#') => parse_heading(&mut line_chars),
-            Some(' ') => parse_code(line_chars.skip(3).take_while(|_| true).collect::<String>()), 
-            None => MDComponent::Empty,
-            _ => parse_paragraph(line),
+            Some('#') => {
+                let md_cc = match current_block {
+                    Some(Block::Paragraph) => Some(parse_paragraph(&block)),
+                    Some(Block::Code) => Some(parse_code(&block)),
+                    None => None,
+                };
+
+                if let Some(b) = md_cc {
+                    md_vec.push(b);
+                    block = "".to_string();
+                }
+
+                Some(parse_heading(&mut line_chars))
+            },
+            Some(' ') => Some(parse_code(&line_chars.skip(3).take_while(|_| true).collect::<String>())), 
+            None => Some(MDComponent::Empty),
+            _ => Some(parse_paragraph(&line)),
         };
-        md_vec.push(md_c);
+
+        if let Some(c) = md_c {
+            md_vec.push(c);
+        }
 
     }
 
