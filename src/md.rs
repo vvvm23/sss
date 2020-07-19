@@ -74,13 +74,33 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 if let Some(b) = md_cc {
                     md_vec.push(b);
                     block = "".to_string();
+                    current_block = None;
                 }
 
                 Some(parse_heading(&mut line_chars))
             },
             Some(' ') => Some(parse_code(&line_chars.skip(3).take_while(|_| true).collect::<String>())), 
-            None => Some(MDComponent::Empty),
-            _ => Some(parse_paragraph(&line)),
+            None => {
+                let md_cc = match current_block {
+                    Some(Block::Paragraph) => Some(parse_paragraph(&block)),
+                    Some(Block::Code) => Some(parse_code(&block)),
+                    None => None,
+                };
+
+                if let Some(c) = md_cc {
+                    md_vec.push(c);
+                }
+
+                block = "".to_string();
+                current_block = None;
+
+                None
+            },
+            _ => {
+                block.push_str(&line);
+                current_block = Some(Block::Paragraph);
+                None
+            }
         };
 
         if let Some(c) = md_c {

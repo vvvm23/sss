@@ -47,6 +47,6 @@ fn main() {
     //println!("{}", html::generate_content("posts/index.md".to_string()));
     //
     
-    println!("{:?}", md::parse_md_file("./test.md"));
+    println!("{:#?}", md::parse_md_file("./test.md"));
 
 }
