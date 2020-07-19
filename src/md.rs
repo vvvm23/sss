@@ -93,7 +93,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                     }
 
                     current_block = Some(Block::Code);
-                    block.push_str(&line);
+                    block.push_str(&line.chars().skip(4).collect::<String>());
                     block.push_str("\n");
 
                 } else {
