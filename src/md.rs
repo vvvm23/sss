@@ -114,7 +114,9 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 None
             },
             Some('!') => {
-                Some(MDComponent::Image("Image Text".to_string(), "Image URL".to_string()))
+                let alt_text: String = line_chars.skip_while(|x| *x != '[').take_while(|x| *x != ']').collect();
+                let url: String = line.chars().skip_while(|x| *x != '(').take_while(|x| *x != ')').collect();
+                Some(MDComponent::Image(alt_text, url))
             }
             None => {
                 let md_cc = match current_block {
