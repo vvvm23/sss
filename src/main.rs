@@ -8,7 +8,6 @@ use crate::cfg::{HeaderLink, SiteConfig};
 use clap::{Arg, App};
 use toml;
 
-
 fn main() {
     // Define command line arguments
     let matches = App::new("Simple Static Sites")

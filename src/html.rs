@@ -1,4 +1,4 @@
-use crate::cfg::{HeaderLink, SiteConfig};
+use crate::cfg::HeaderLink;
 
 pub fn generate_head(title: String, style_path: String) -> String {
     // TODO: Optional highlight.js
