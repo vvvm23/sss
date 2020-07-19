@@ -24,13 +24,19 @@ pub enum MDComponent {
     Empty,
 }
 
+#[derive(Copy, Clone)]
+enum Block {
+    Code,
+    Paragraph,
+}
+
 fn parse_heading(text: &mut std::str::Chars) -> MDComponent {
     let mut depth: u8 = 1;
     while text.next() == Some('#') {
         depth += 1;
     }
 
-    MDComponent::Heading(depth, text.collect())
+    MDComponent::Heading(depth, text.take_while(|x| *x != '#').collect())
 }
 
 fn parse_code(text: String) -> MDComponent {
@@ -47,6 +53,8 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
     let f = BufReader::new(f);
 
     let mut md_vec: Vec<MDComponent> = Vec::new();
+    let mut block: String = "".to_string();
+    let mut current_block: Option<Block> = None;
 
     for (i, l) in f.lines().enumerate() {
         let line = l.unwrap().to_string();

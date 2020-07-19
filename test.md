@@ -1,6 +1,6 @@
-# Why Cappucino is a Tragic Hero
+# Why Cappucino is a Tragic Hero #
 
-## Introduction
+## Introduction ## 
 
 Cappuccino is the main antagonist of The Killer Bean and Killer Bean Forever. He is a crime boss working for the mafia, usually selling drugs and weapons. He also owns a bunch of warehouses. The Shadow Agency has sent out Killer Bean to take him out for unknown reasons, though Killer Bean is out for Cappuccino's weapon department handler, Vagan.
 
