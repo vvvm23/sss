@@ -24,8 +24,13 @@ pub enum MDComponent {
     Empty,
 }
 
-fn parse_heading(depth: u8, text: String) -> MDComponent {
-    MDComponent::Heading(depth, text)
+fn parse_heading(text: &mut std::str::Chars) -> MDComponent {
+    let mut depth: u8 = 1;
+    while text.next() == Some('#') {
+        depth += 1;
+    }
+
+    MDComponent::Heading(depth, text.collect())
 }
 
 fn parse_code(text: String) -> MDComponent {
@@ -51,7 +56,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
         let md_c = match c {
             // A bit dirty..
-            Some('#') => parse_heading(1, line_chars.skip(1).take_while(|_| true).collect::<String>()),
+            Some('#') => parse_heading(&mut line_chars),
             Some(' ') => parse_code(line_chars.skip(3).take_while(|_| true).collect::<String>()), 
             None => MDComponent::Empty,
             _ => parse_paragraph(line),

@@ -1,5 +1,7 @@
 # Why Cappucino is a Tragic Hero
 
+## Introduction
+
 Cappuccino is the main antagonist of The Killer Bean and Killer Bean Forever. He is a crime boss working for the mafia, usually selling drugs and weapons. He also owns a bunch of warehouses. The Shadow Agency has sent out Killer Bean to take him out for unknown reasons, though Killer Bean is out for Cappuccino's weapon department handler, Vagan.
 
 In The Killer Bean, he is seen as a blue jelly bean with a cyan mouth and blue shoes to go along with him. He is also wields a pistol. In Killer Bean Forever he is a brown coffee bean wearing a tan tuxedo along with a tan hat to match. He wears a yellow tie and a black shirt inside the suit. He is usually seen with a baseball bat.
@@ -10,6 +12,6 @@ Cappuccino is seen as intelligent and stern. He is often berating his beans for 
     def epic(x,y):
         return x + y
 
-# Conclusion
+## Conclusion
 
 Thus concludes my manifesto (but this is not actually mine).
