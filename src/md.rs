@@ -109,5 +109,17 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
     }
 
+    let md_cc = match current_block {
+        Some(Block::Paragraph) => Some(parse_paragraph(&block)),
+        Some(Block::Code) => Some(parse_code(&block)),
+        None => None,
+    };
+
+    if let Some(b) = md_cc {
+        md_vec.push(b);
+        block = "".to_string();
+        current_block = None;
+    }
+
     Ok(md_vec)
 }
