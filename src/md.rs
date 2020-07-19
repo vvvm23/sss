@@ -18,7 +18,7 @@ use std::io::prelude::*;
 pub enum MDComponent {
     Heading(u8, String),
     Paragraph(String),
-    Image(String),
+    Image(String, String),
     Hyperlink(String),
     CodeBlock(String),
     Empty,
@@ -113,6 +113,9 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 }
                 None
             },
+            Some('!') => {
+                Some(MDComponent::Image("Image Text".to_string(), "Image URL".to_string()))
+            }
             None => {
                 let md_cc = match current_block {
                     Some(Block::Paragraph) => Some(parse_paragraph(&block)),
