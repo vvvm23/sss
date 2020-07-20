@@ -57,6 +57,16 @@ pub fn stream_to_html(stream: Vec<MDComponent>) -> std::io::Result<()> {
     let header = generate_header(&title, vec![]);
     f.write(header.as_bytes())?;
 
+    for mdc in stream {
+        match mdc {
+            MDComponent::Heading => (),
+            MDComponent::Paragraph => (),
+            MDComponent::Image => (),
+            MDComponent::CodeBlock => (),
+            MDComponent::Empty => (),
+            _ => (),
+        };
+    }
 
     f.write("</body>".as_bytes())?;
     f.write("</html>".as_bytes())?;
