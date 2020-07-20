@@ -39,7 +39,7 @@ fn generate_header_links(links: &Vec<HeaderLink>) -> String {
 /// Generate HTML for header in body
 pub fn generate_header(title: &String, links: &Vec<HeaderLink>) -> String {
     format!("<div class=\"header\">\
-        <span class=\"sitetitle\">{}</span>\
+        <a href=\"/\" class=\"sitetitle\">{}</span>\
         {}\
         </div>\
     ", title, generate_header_links(links))

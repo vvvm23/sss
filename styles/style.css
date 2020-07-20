@@ -22,6 +22,7 @@ body {
 .header .sitetitle {
     font-size: 30px;
     padding: 10px;
+    text-decoration: none;
 }
 
 .header a {
