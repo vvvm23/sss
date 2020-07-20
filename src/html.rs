@@ -47,6 +47,12 @@ pub fn stream_to_html(stream: Vec<MDComponent>, title: String) -> std::io::Resul
     let mut f = BufWriter::new(f);
 
     let style_path = "styles/style.css".to_string();
+    let style_res = std::fs::copy(&style_path, format!("public/{}", &style_path));
+
+    match style_res {
+        Ok(_) => (),
+        Err(_) => println!("Failed to copy style file")
+    }
 
     f.write("<html>".as_bytes())?;
     let head = generate_head(&title, &style_path);
