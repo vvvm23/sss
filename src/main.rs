@@ -30,8 +30,10 @@ fn main() {
     }
 
     let toml_string: String = std::fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
-    let mut toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
+    let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
     let toml_cfg = toml_cfg.fill_empty();
+
+    let start_time = std::time::Instant::now();
 
     let stream = md::parse_md_file("./test.md");
     let stream = match stream {
@@ -43,5 +45,7 @@ fn main() {
         Ok(_) => (),
         Err(_) => println!("Failed to parse stream into HTML.")
     };
-
+    
+    let duration = start_time.elapsed();
+    println!("Site generation took {:?}", duration);
 }

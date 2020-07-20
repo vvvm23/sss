@@ -15,6 +15,7 @@ pub struct SiteConfig {
 }
 
 // TODO: A new struct with no Option in the fields. fill_empty will return this
+//       This will help later so we don't need to unpack lots of Option
 impl SiteConfig {
     pub fn fill_empty(mut self) -> Self {
         // Populate missing .toml entries with some defaults
