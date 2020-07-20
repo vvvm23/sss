@@ -14,8 +14,9 @@ pub struct SiteConfig {
     pub pub_dir: Option<String>, // path to output directory where resulting website is placed
 }
 
+// TODO: A new struct with no Option in the fields. fill_empty will return this
 impl SiteConfig {
-    pub fn fill_empty(&mut self) -> &mut Self {
+    pub fn fill_empty(mut self) -> Self {
         // Populate missing .toml entries with some defaults
         // TODO: Use proper path constructors
         if let None = self.title { self.title = Some("Default Site Title".to_string()) } // default to "Default Site Title"

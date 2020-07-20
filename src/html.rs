@@ -1,4 +1,4 @@
-use crate::cfg::HeaderLink;
+use crate::cfg::{HeaderLink, SiteConfig};
 use crate::md::MDComponent;
 use std::fs::File;
 use std::io::{BufWriter, Write};
@@ -48,15 +48,21 @@ pub fn generate_header(title: &String, links: Vec<HeaderLink>) -> String {
 /// Takes a stream (Vec<MDComponent>) and a title and writes to public/index.html
 // TODO: parse title from file? MDComponent::Title 
 // TODO: define output file based on input file (maintain directory structure)
-pub fn stream_to_html(stream: Vec<MDComponent>, title: String) -> std::io::Result<()> {
+pub fn stream_to_html(stream: Vec<MDComponent>, site_cfg: SiteConfig) -> std::io::Result<()> {
+    let title = match site_cfg.title {
+        Some(t) => t,
+        None => "Default Site Title".to_string(),
+    };
+    let style_path = match site_cfg.style_path {
+        Some(p) => p,
+        None => "styles/style.css".to_string()
+    };
+
     let f = File::create("public/index.html").expect("Unable to create file");
     let mut f = BufWriter::new(f);
 
-    let style_path = "styles/style.css".to_string();
-    let style_res = std::fs::copy(&style_path, format!("public/{}", &style_path));
-
     // Allow no styles/style.css
-    match style_res {
+    match std::fs::copy(&style_path, format!("public/{}", &style_path)) {
         Ok(_) => (),
         Err(_) => println!("Failed to copy style file")
     }
@@ -68,7 +74,9 @@ pub fn stream_to_html(stream: Vec<MDComponent>, title: String) -> std::io::Resul
 
     let header = generate_header(&title, vec![]);
     f.write(header.as_bytes())?;
-
+    
+    f.write("<hr>".as_bytes())?;
+    f.write("<div class=\"content\">".as_bytes())?;
     for mdc in stream {
         match mdc {
             MDComponent::Heading(d, t) => f.write(format!("<h{}>{}</h{}>", d, t, d).as_bytes())?,
@@ -80,7 +88,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>, title: String) -> std::io::Resul
             MDComponent::Empty => f.write("".as_bytes())?,
         };
     }
-
+    f.write("</div>".as_bytes())?;
     f.write("</body>".as_bytes())?;
     f.write("</html>".as_bytes())?;
 

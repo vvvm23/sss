@@ -28,16 +28,18 @@ fn main() {
         Some(v) => println!("{}", v),
         None => println!("No argument.")
     }
-    
-    println!("{:#?}", md::parse_md_file("./test.md"));
-    let stream = md::parse_md_file("./test.md");
 
+    let toml_string: String = std::fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
+    let mut toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
+    let toml_cfg = toml_cfg.fill_empty();
+
+    let stream = md::parse_md_file("./test.md");
     let stream = match stream {
         Ok(s) => s,
         _ => panic!("Failed to obtain stream")
     };
 
-    match html::stream_to_html(stream, "afmck.in".to_string()) {
+    match html::stream_to_html(stream, toml_cfg) {
         Ok(_) => (),
         Err(_) => println!("Failed to parse stream into HTML.")
     };
