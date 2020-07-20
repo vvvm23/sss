@@ -14,6 +14,7 @@ use std::io::BufReader;
 use std::fs::File;
 use std::io::prelude::*;
 
+/// Enum containing all supports markdown components
 #[derive(Debug)]
 pub enum MDComponent {
     Heading(u8, String),
@@ -24,12 +25,14 @@ pub enum MDComponent {
     Empty,
 }
 
+/// Used for defining the current block for multi-line blocks
 #[derive(Copy, Clone)]
 enum Block {
     Code,
     Paragraph,
 }
 
+/// Interpret Chars as a heading and return MDComponent::Heading
 fn parse_heading(text: &mut std::str::Chars) -> MDComponent {
     let mut depth: u8 = 1;
     while text.next() == Some('#') {
@@ -39,10 +42,12 @@ fn parse_heading(text: &mut std::str::Chars) -> MDComponent {
     MDComponent::Heading(depth, text.take_while(|x| *x != '#').collect())
 }
 
+/// Interpret String as a code block and return MDComponent::CodeBlock
 fn parse_code(text: &String) -> MDComponent {
     MDComponent::CodeBlock(text.to_string())
 }
 
+/// Interpret String as a paragraph and return MDComponent::Paragraph
 fn parse_paragraph(text: &String) -> MDComponent {
     MDComponent::Paragraph(text.to_string())
 }
@@ -52,19 +57,19 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
     let f = File::open(path)?;
     let f = BufReader::new(f);
 
-    let mut md_vec: Vec<MDComponent> = Vec::new();
-    let mut block: String = "".to_string();
-    let mut current_block: Option<Block> = None;
+    let mut md_vec: Vec<MDComponent> = Vec::new(); // Initialise stream to empty vec
+    let mut block: String = "".to_string(); // Initialise current block to empty 
+    let mut current_block: Option<Block> = None; // Set current block to None
 
-    for (i, l) in f.lines().enumerate() {
-        let line = l.unwrap().to_string();
+    for (_, l) in f.lines().enumerate() {
+        let line = l.unwrap().to_string(); 
         let mut line_chars = line.chars();
         
         let c = line_chars.next();
 
         let md_c = match c {
             // A bit dirty..
-            Some('#') => {
+            Some('#') => { // Found a heading
                 let md_cc = match current_block {
                     Some(Block::Paragraph) => Some(parse_paragraph(&block)),
                     Some(Block::Code) => Some(parse_code(&block)),
@@ -79,7 +84,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
                 Some(parse_heading(&mut line_chars))
             },
-            Some(' ') => {
+            Some(' ') => { // Potentially found a code block
                 if line_chars.take(3).collect::<String>() == "   " {
                     let md_cc = match current_block {
                         Some(Block::Code) => None,
@@ -96,7 +101,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                     block.push_str(&line.chars().skip(4).collect::<String>());
                     block.push_str("\n");
 
-                } else {
+                } else { 
                     let md_cc = match current_block {
                         Some(Block::Code) => Some(parse_code(&block)),
                         Some(Block::Paragraph) => None,
@@ -114,7 +119,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 }
                 None
             },
-            Some('!') => {
+            Some('!') => { // Found an image
                 let alt_text: String = line_chars.skip_while(|x| *x != '[').skip(1).take_while(|x| *x != ']').collect();
                 let url: String = line.chars().skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
                 Some(MDComponent::Image(alt_text, url))
@@ -135,7 +140,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
                 None
             },
-            _ => {
+            _ => { // Found something else, interpret as paragraph
                 block.push_str(&line);
                 block.push_str(" ");
                 current_block = Some(Block::Paragraph);
@@ -150,6 +155,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
     }
 
+    // Add final block
     let md_cc = match current_block {
         Some(Block::Paragraph) => Some(parse_paragraph(&block)),
         Some(Block::Code) => Some(parse_code(&block)),
@@ -158,8 +164,6 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
     if let Some(b) = md_cc {
         md_vec.push(b);
-        block = "".to_string();
-        current_block = None;
     }
 
     Ok(md_vec)
