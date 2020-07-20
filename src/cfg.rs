@@ -22,7 +22,7 @@ impl SiteConfig {
         // TODO: Use proper path constructors
         if let None = self.title { self.title = Some("Default Site Title".to_string()) } // default to "Default Site Title"
         if let None = self.header_links { self.header_links = Some(Vec::new()) } // defaults to empty vec
-        if let None = self.page_dir { self.page_dir = Some("pages/".to_string()) } // defaults to pages/
+        if let None = self.page_dir { self.page_dir = Some("posts/".to_string()) } // defaults to pages/
         if let None = self.index_path { self.index_path = Some(format!("{}{}", // defaults to $pub_dir/index.md
            match &self.page_dir {
                Some(c) => c,

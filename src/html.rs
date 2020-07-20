@@ -62,15 +62,13 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
         Some(ls) => ls,
         None => panic!()
     };
+    let pub_dir = match &site_cfg.pub_dir {
+        Some(p) => p,
+        None => panic!()
+    };
 
-    let f = File::create(format!("public/{}", path)).expect("Unable to create file");
+    let f = File::create(format!("{}/{}", pub_dir, path)).expect("Unable to create file");
     let mut f = BufWriter::new(f);
-
-    // Allow no styles/style.css
-    match std::fs::copy(&style_path, format!("public/{}", &style_path)) {
-        Ok(_) => (),
-        Err(_) => println!("Failed to copy style file")
-    }
 
     f.write("<html>".as_bytes())?;
     let head = generate_head(&title, &style_path);

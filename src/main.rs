@@ -53,11 +53,32 @@ fn main() {
         None => panic!()
     };
 
+    let posts_dir = match &toml_cfg.page_dir {
+        Some(p) => p,
+        None => panic!()
+    };
+
+    let style_path = match &toml_cfg.style_path {
+        Some(p) => p,
+        None => panic!(),
+    };
+
+    let pub_dir = match &toml_cfg.pub_dir {
+        Some(p) => p,
+        None => panic!()
+    };
+
     let start_time = std::time::Instant::now();
+
+    // Allow no styles/style.css
+    match std::fs::copy(&style_path, format!("{}/{}", pub_dir, style_path)) {
+        Ok(_) => (),
+        Err(_) => println!("Failed to copy style file")
+    }
 
     convert_file(index_path, &"index.html".to_string(), &toml_cfg);
 
-    let paths = fs::read_dir("posts/").unwrap();
+    let paths = fs::read_dir(posts_dir).unwrap();
     for p in paths {
         let p = format!("{}", p.unwrap().path().display());
         let mut target_name: String = p.chars().take_while(|x| *x != '.').collect();
