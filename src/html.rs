@@ -18,16 +18,16 @@ pub fn generate_head(title: &String, style_path: &String) -> String {
 }
 
 /// Generate HTML links in header 
-fn generate_header_links(links: Vec<HeaderLink>) -> String {
+fn generate_header_links(links: &Vec<HeaderLink>) -> String {
     let mut header = "".to_string();
     for l in links {
-        let name = match l.name {
+        let name = match &l.name {
             Some(n) => n,
-            None => "missing-name".to_string()
+            None => panic!()
         };
-        let url = match l.url {
+        let url = match &l.url {
             Some(u) => u,
-            None => "missing-url".to_string()
+            None => panic!()
         };
 
         header.push_str(&format!("<a href=\"{}\">{}</a>", url, name));
@@ -37,7 +37,7 @@ fn generate_header_links(links: Vec<HeaderLink>) -> String {
 }
 
 /// Generate HTML for header in body
-pub fn generate_header(title: &String, links: Vec<HeaderLink>) -> String {
+pub fn generate_header(title: &String, links: &Vec<HeaderLink>) -> String {
     format!("<div class=\"header\">\
         <span class=\"sitetitle\">{}</span>\
         {}\
@@ -48,21 +48,22 @@ pub fn generate_header(title: &String, links: Vec<HeaderLink>) -> String {
 /// Takes a stream (Vec<MDComponent>) and a title and writes to public/index.html
 // TODO: parse title from file? MDComponent::Title 
 // TODO: define output file based on input file (maintain directory structure)
-pub fn stream_to_html(stream: Vec<MDComponent>, site_cfg: SiteConfig) -> std::io::Result<()> {
-    let title = match site_cfg.title {
+pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteConfig) -> std::io::Result<()> {
+    // TODO: panicking is dumb, don't do that
+    let title = match &site_cfg.title {
         Some(t) => t,
-        None => "Default Site Title".to_string(),
+        None => panic!(),
     };
-    let style_path = match site_cfg.style_path {
+    let style_path = match &site_cfg.style_path {
         Some(p) => p,
-        None => "styles/style.css".to_string()
+        None => panic!(),
     };
-    let header_links = match site_cfg.header_links {
+    let header_links = match &site_cfg.header_links {
         Some(ls) => ls,
-        None => vec![]
+        None => panic!()
     };
 
-    let f = File::create("public/index.html").expect("Unable to create file");
+    let f = File::create(format!("public/{}", path)).expect("Unable to create file");
     let mut f = BufWriter::new(f);
 
     // Allow no styles/style.css
