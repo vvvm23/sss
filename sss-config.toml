@@ -2,6 +2,10 @@ title = "afmck.in"
 index_path = "posts/01.md"
 
 [[header_links]]
+name = "About"
+url = "/posts/about.html"
+
+[[header_links]]
 name = "GitHub"
 url = "https://github.com/vvvm23"
 
