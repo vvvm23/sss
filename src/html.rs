@@ -61,7 +61,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>) -> std::io::Result<()> {
         match mdc {
             MDComponent::Heading(d, t) => f.write(format!("<h{}>{}</h{}>", d, t, d).as_bytes())?,
             MDComponent::Paragraph(t) => f.write(format!("<p>{}</p>", t).as_bytes())?,
-            MDComponent::Image(t, u) => f.write(format!("<img src=\"{}\" alt=\"{}\">", u, t).as_bytes())?,
+            MDComponent::Image(t, u) => f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?,
             MDComponent::CodeBlock(t) => f.write(format!("<pre><code>{}</code></pre>", t).as_bytes())?,
             MDComponent::Empty => f.write("".as_bytes())?,
             _ => f.write("".as_bytes())?
