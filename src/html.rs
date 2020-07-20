@@ -42,12 +42,11 @@ pub fn generate_header(title: &String, links: Vec<HeaderLink>) -> String {
     ", title, generate_header_links(links))
 }
 
-pub fn stream_to_html(stream: Vec<MDComponent>) -> std::io::Result<()> {
-    let f = File::create("./output.html").expect("Unable to create file");
+pub fn stream_to_html(stream: Vec<MDComponent>, title: String) -> std::io::Result<()> {
+    let f = File::create("public/index.html").expect("Unable to create file");
     let mut f = BufWriter::new(f);
 
-    let title = "TITLE".to_string();
-    let style_path = "STYLE".to_string();
+    let style_path = "styles/style.css".to_string();
 
     f.write("<html>".as_bytes())?;
     let head = generate_head(&title, &style_path);
@@ -61,7 +60,9 @@ pub fn stream_to_html(stream: Vec<MDComponent>) -> std::io::Result<()> {
         match mdc {
             MDComponent::Heading(d, t) => f.write(format!("<h{}>{}</h{}>", d, t, d).as_bytes())?,
             MDComponent::Paragraph(t) => f.write(format!("<p>{}</p>", t).as_bytes())?,
-            MDComponent::Image(t, u) => f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?,
+            MDComponent::Image(t, u) => {
+                std::fs::copy(&u, format!("public/{}", &u))?;
+                f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?},
             MDComponent::CodeBlock(t) => f.write(format!("<pre><code>{}</code></pre>", t).as_bytes())?,
             MDComponent::Empty => f.write("".as_bytes())?,
             _ => f.write("".as_bytes())?

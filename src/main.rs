@@ -55,6 +55,6 @@ fn main() {
         _ => panic!("Failed to obtain stream")
     };
 
-    html::stream_to_html(stream);
+    html::stream_to_html(stream, "afmck.in".to_string());
 
 }

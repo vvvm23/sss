@@ -8,7 +8,7 @@ This is an extension of the paragraph but on a new line.
 
 Cappuccino is seen as intelligent and stern. He is often berating his beans for being wrong or giving him answers that make no sense or are irrelevant. He even goes as far as to hit them out of a skyscraper with his baseball bat in Killer Bean Forever. He does have a vengeful side as well. Killer Bean killed his nephew so he assigns Vagan to eliminate him as an act of revenge and to find who sent him. In The Killer Bean he has a cocky and cowardly side. He acts scared when Killer Bean threatens him due to Cappuccino smacking him. He decides to try to run when threatened again, but is shot in a comedic way. In Killer Bean Forever, he tries to ask Killer Bean why he wont kill him, but when he is threatened he makes up excuses to leave. 
 
-![Cappuccino with his trusty bat](./imgs/cappuccino.png)
+![Cappuccino with his trusty bat](./imgs/Cappuccino.jpg)
 
     def epic(x,y):
         return x + y
