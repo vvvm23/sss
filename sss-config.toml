@@ -1,4 +1,5 @@
 title = "afmck.in"
+index_path = "posts/01.md"
 
 [[header_links]]
 name = "GitHub"

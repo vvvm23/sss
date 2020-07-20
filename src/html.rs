@@ -9,7 +9,7 @@ pub fn generate_head(title: &String, style_path: &String) -> String {
     format!("<head>\
         <title>{}</title>\
         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\
-        <link rel=\"stylesheet\" type=\"text/css\" href=\"{}\">\
+        <link rel=\"stylesheet\" type=\"text/css\" href=\"/{}\">\
         <link rel=\"stylesheet\" href=\"//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css\">\
         <script src=\"//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js\"></script>\
         <script>hljs.initHighlightingOnLoad();</script>\
@@ -87,7 +87,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
             MDComponent::Heading(d, t) => f.write(format!("<h{}>{}</h{}>", d, t, d).as_bytes())?,
             MDComponent::Paragraph(t) => f.write(format!("<p>{}</p>", t).as_bytes())?,
             MDComponent::Image(t, u) => {
-                std::fs::copy(&u, format!("public/{}", &u))?;
+                std::fs::copy(format!(".{}", &u), format!("public/{}", &u))?;
                 f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?},
             MDComponent::CodeBlock(t) => f.write(format!("<pre><code>{}</code></pre>", t).as_bytes())?,
             MDComponent::Empty => f.write("".as_bytes())?,

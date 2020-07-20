@@ -1,6 +1,6 @@
 @font-face {
     font-family: "monaco-woff";
-    src: url(../fonts/monaco.woff)
+    src: url(/fonts/monaco.woff)
 }
 
 body {
