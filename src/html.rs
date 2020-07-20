@@ -3,6 +3,7 @@ use crate::md::MDComponent;
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
+/// Generate HTML <head> block
 pub fn generate_head(title: &String, style_path: &String) -> String {
     // TODO: Optional highlight.js
     format!("<head>\
@@ -16,6 +17,7 @@ pub fn generate_head(title: &String, style_path: &String) -> String {
     ", title, style_path)
 }
 
+/// Generate HTML links in header 
 fn generate_header_links(links: Vec<HeaderLink>) -> String {
     let mut header = "".to_string();
     for l in links {
@@ -34,6 +36,7 @@ fn generate_header_links(links: Vec<HeaderLink>) -> String {
     header
 }
 
+/// Generate HTML for header in body
 pub fn generate_header(title: &String, links: Vec<HeaderLink>) -> String {
     format!("<div class=\"header\">\
         <span class=\"sitetitle\">{}</span>\
@@ -42,6 +45,9 @@ pub fn generate_header(title: &String, links: Vec<HeaderLink>) -> String {
     ", title, generate_header_links(links))
 }
 
+/// Takes a stream (Vec<MDComponent>) and a title and writes to public/index.html
+// TODO: parse title from file? MDComponent::Title 
+// TODO: define output file based on input file (maintain directory structure)
 pub fn stream_to_html(stream: Vec<MDComponent>, title: String) -> std::io::Result<()> {
     let f = File::create("public/index.html").expect("Unable to create file");
     let mut f = BufWriter::new(f);
@@ -49,6 +55,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>, title: String) -> std::io::Resul
     let style_path = "styles/style.css".to_string();
     let style_res = std::fs::copy(&style_path, format!("public/{}", &style_path));
 
+    // Allow no styles/style.css
     match style_res {
         Ok(_) => (),
         Err(_) => println!("Failed to copy style file")
