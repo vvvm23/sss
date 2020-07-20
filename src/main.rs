@@ -48,5 +48,13 @@ fn main() {
     //
     
     println!("{:#?}", md::parse_md_file("./test.md"));
+    let stream = md::parse_md_file("./test.md");
+
+    let stream = match stream {
+        Ok(s) => s,
+        _ => panic!("Failed to obtain stream")
+    };
+
+    html::stream_to_html(stream);
 
 }

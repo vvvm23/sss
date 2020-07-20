@@ -1,6 +1,9 @@
 use crate::cfg::HeaderLink;
+use crate::md::MDComponent;
+use std::fs::File;
+use std::io::{BufWriter, Write};
 
-pub fn generate_head(title: String, style_path: String) -> String {
+pub fn generate_head(title: &String, style_path: &String) -> String {
     // TODO: Optional highlight.js
     format!("<head>\
         <title>{}</title>\
@@ -31,21 +34,33 @@ fn generate_header_links(links: Vec<HeaderLink>) -> String {
     header
 }
 
-fn generate_content_body(post_path: String) -> String {
-    "epic".to_string()
-}
-
-pub fn generate_content(post_path: String) -> String {
-    format!("<div class=\"content\">\
-    {}\
-    </div>\
-    ", generate_content_body(post_path))
-}
-
-pub fn generate_header(title: String, links: Vec<HeaderLink>) -> String {
+pub fn generate_header(title: &String, links: Vec<HeaderLink>) -> String {
     format!("<div class=\"header\">\
         <span class=\"sitetitle\">{}</span>\
         {}\
         </div>\
     ", title, generate_header_links(links))
 }
+
+pub fn stream_to_html(stream: Vec<MDComponent>) -> std::io::Result<()> {
+    let f = File::create("./output.html").expect("Unable to create file");
+    let mut f = BufWriter::new(f);
+
+    let title = "TITLE".to_string();
+    let style_path = "STYLE".to_string();
+
+    f.write("<html>".as_bytes())?;
+    let head = generate_head(&title, &style_path);
+    f.write(head.as_bytes())?;
+    f.write("<body>".as_bytes())?;
+
+    let header = generate_header(&title, vec![]);
+    f.write(header.as_bytes())?;
+
+
+    f.write("</body>".as_bytes())?;
+    f.write("</html>".as_bytes())?;
+
+    Ok(())
+}
+
