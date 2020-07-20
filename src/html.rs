@@ -78,7 +78,6 @@ pub fn stream_to_html(stream: Vec<MDComponent>, title: String) -> std::io::Resul
                 f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?},
             MDComponent::CodeBlock(t) => f.write(format!("<pre><code>{}</code></pre>", t).as_bytes())?,
             MDComponent::Empty => f.write("".as_bytes())?,
-            _ => f.write("".as_bytes())?
         };
     }
 

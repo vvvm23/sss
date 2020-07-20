@@ -37,6 +37,9 @@ fn main() {
         _ => panic!("Failed to obtain stream")
     };
 
-    html::stream_to_html(stream, "afmck.in".to_string());
+    match html::stream_to_html(stream, "afmck.in".to_string()) {
+        Ok(_) => (),
+        Err(_) => println!("Failed to parse stream into HTML.")
+    };
 
 }

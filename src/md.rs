@@ -20,7 +20,6 @@ pub enum MDComponent {
     Heading(u8, String),
     Paragraph(String),
     Image(String, String),
-    Hyperlink(String),
     CodeBlock(String),
     Empty,
 }
