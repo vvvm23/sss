@@ -110,6 +110,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
                     current_block = Some(Block::Paragraph);
                     block.push_str(&line);
+                    block.push_str(" ");
                 }
                 None
             },
@@ -136,6 +137,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
             },
             _ => {
                 block.push_str(&line);
+                block.push_str(" ");
                 current_block = Some(Block::Paragraph);
                 None
             }
