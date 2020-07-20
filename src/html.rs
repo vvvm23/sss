@@ -57,6 +57,10 @@ pub fn stream_to_html(stream: Vec<MDComponent>, site_cfg: SiteConfig) -> std::io
         Some(p) => p,
         None => "styles/style.css".to_string()
     };
+    let header_links = match site_cfg.header_links {
+        Some(ls) => ls,
+        None => vec![]
+    };
 
     let f = File::create("public/index.html").expect("Unable to create file");
     let mut f = BufWriter::new(f);
@@ -72,7 +76,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>, site_cfg: SiteConfig) -> std::io
     f.write(head.as_bytes())?;
     f.write("<body>".as_bytes())?;
 
-    let header = generate_header(&title, vec![]);
+    let header = generate_header(&title, header_links);
     f.write(header.as_bytes())?;
     
     f.write("<hr>".as_bytes())?;
