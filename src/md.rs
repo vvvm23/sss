@@ -17,12 +17,11 @@ use std::io::prelude::*;
 /// Enum containing paragraph components
 #[derive(Debug)]
 pub enum PGComponent {
-    Text(String),
-    Bold(String),
-    Italics(String),
-    Underline(String),
-    Hyperlink(String, String),
-    Code(String),
+    Text(String), // Default type
+    Bold(String), // ** **
+    Italics(String), // * *
+    Hyperlink(String, String), // (text, url)
+    Code(String), // Inline code
 }
 
 /// Enum containing all supports markdown components
