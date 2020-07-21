@@ -14,6 +14,17 @@ use std::io::BufReader;
 use std::fs::File;
 use std::io::prelude::*;
 
+/// Enum containing paragraph components
+#[derive(Debug)]
+pub enum PGComponent {
+    Text(String),
+    Bold(String),
+    Italics(String),
+    Underline(String),
+    Hyperlink(String, String),
+    Code(String),
+}
+
 /// Enum containing all supports markdown components
 #[derive(Debug)]
 pub enum MDComponent {
