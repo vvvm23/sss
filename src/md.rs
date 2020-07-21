@@ -9,7 +9,6 @@
 ///     - Hyperlinks
 ///     - Code blocks, (indented code blocks)
 ///
-
 use std::io::BufReader;
 use std::fs::File;
 use std::io::prelude::*;
