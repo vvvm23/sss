@@ -75,6 +75,12 @@ fn parse_paragraph(text: &String) -> MDComponent {
     for c in text_chars {
         match c {
             '*' => {
+                if let Some(Inline::Text) = current_comp {
+                    pg_vec.push(PGComponent::Text(current_block));
+                    current_block = "".to_string();
+                    current_comp = None;
+                }
+
                 match text_chars.next() {
                     Some('*') => { // Bold
                         let bold: String = text_chars.take_while(|x| *x != '*').skip(2).collect(); // Technically will not check for closing **, only *
@@ -90,6 +96,12 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 };
             },
             '[' => {
+                if let Some(Inline::Text) = current_comp {
+                    pg_vec.push(PGComponent::Text(current_block));
+                    current_block = "".to_string();
+                    current_comp = None;
+                }
+
                 let text: String = text_chars.take_while(|x| *x != ']').skip(1).collect();
                 let url: String = text_chars.skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
                 pg_vec.push(PGComponent::Hyperlink(text, url));
