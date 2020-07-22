@@ -66,8 +66,6 @@ fn parse_code(text: &String) -> MDComponent {
 
 /// Interpret String as a paragraph and return MDComponent::Paragraph
 fn parse_paragraph(text: &String) -> MDComponent {
-    //MDComponent::Paragraph(text.to_string())
-    
     let mut current_comp: Option<Inline> = None;
     let mut current_block: String = "".to_string();
     let mut pg_vec: Vec<PGComponent> = Vec::new();
@@ -76,12 +74,11 @@ fn parse_paragraph(text: &String) -> MDComponent {
     let text_chars = chars.by_ref();
 
     // TODO: Check for unclosed tags and other such error handling
-    //for c in text_chars {
     loop { 
         let c = &text_chars.next();
 
         match c {
-            Some('*') => {
+            Some('*') => { // Some form of emphasis
                 if let Some(Inline::Text) = current_comp {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
@@ -90,9 +87,14 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
                 match text_chars.next() {
                     Some('*') => { // Bold
-                        //let bold: String = text_chars.take_while(|x| *x != '*').skip(2).collect(); // Technically will not check for closing **, only *
                         let bold: String = text_chars.take_while(|x| *x != '*').collect(); // Technically will not check for closing **, only *
-                        text_chars.next();
+                        let closing = text_chars.next();
+
+                        match closing {
+                            Some('*') => (),
+                            _ => panic!("No closing asterix in bold tag!"),
+                        };
+
                         pg_vec.push(PGComponent::Bold(bold.to_string()));
                     },
                     Some(c) => { // Italics
@@ -100,11 +102,11 @@ fn parse_paragraph(text: &String) -> MDComponent {
                         pg_vec.push(PGComponent::Italics(italics));
                     },
                     None => { // Something went wrong
-
+                        panic!("Expected paragraph stream to continue. It did not..");
                     },
                 };
             },
-            Some('[') => {
+            Some('[') => { // Inline link
                 if let Some(Inline::Text) = current_comp {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
@@ -115,7 +117,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 let url: String = text_chars.skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
                 pg_vec.push(PGComponent::Hyperlink(text, url));
             },
-            Some('`') => {
+            Some('`') => { // Inline code
                 if let Some(Inline::Text) = current_comp {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
@@ -125,7 +127,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 let code: String = text_chars.take_while(|x| *x != '`').collect();
                 pg_vec.push(PGComponent::Code(code));
             },
-            Some(ch) => {
+            Some(ch) => { // Any other character
                 if let Some(_) = current_comp {
                     current_block.push(*ch);
                 } else {
@@ -133,12 +135,13 @@ fn parse_paragraph(text: &String) -> MDComponent {
                     current_block.push(*ch);
                 }
             },
-            None => {
+            None => { // Reached end of iterator
                 break;
             }
         }
     }
 
+    // Flush remaining block as text
     if let Some(Inline::Text) = current_comp {
         pg_vec.push(PGComponent::Text(current_block));
     }
