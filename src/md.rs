@@ -72,12 +72,16 @@ fn parse_paragraph(text: &String) -> MDComponent {
     let mut current_block: String = "".to_string();
     let mut pg_vec: Vec<PGComponent> = Vec::new();
 
-    let mut text_chars = text.chars();
+    let mut chars = text.chars();
+    let text_chars = chars.by_ref();
 
     // TODO: Check for unclosed tags and other such error handling
-    for c in text_chars {
+    //for c in text_chars {
+    loop { 
+        let c = &text_chars.next();
+
         match c {
-            '*' => {
+            Some('*') => {
                 if let Some(Inline::Text) = current_comp {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
@@ -87,7 +91,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 match text_chars.next() {
                     Some('*') => { // Bold
                         let bold: String = text_chars.take_while(|x| *x != '*').skip(2).collect(); // Technically will not check for closing **, only *
-                        pg_vec.push(PGComponent::Bold(bold));
+                        pg_vec.push(PGComponent::Bold(bold.to_string()));
                     },
                     Some(c) => { // Italics
                         let italics: String = format!("{}{}", c, text_chars.take_while(|x| *x != '*').skip(1).collect::<String>()); // bit wack
@@ -98,7 +102,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
                     },
                 };
             },
-            '[' => {
+            Some('[') => {
                 if let Some(Inline::Text) = current_comp {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
@@ -109,7 +113,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 let url: String = text_chars.skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
                 pg_vec.push(PGComponent::Hyperlink(text, url));
             },
-            '`' => {
+            Some('`') => {
                 if let Some(Inline::Text) = current_comp {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
@@ -119,14 +123,17 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 let code: String = text_chars.take_while(|x| *x != '`').skip(1).collect();
                 pg_vec.push(PGComponent::Code(code));
             },
-            _ => {
-                if let Some(pc) = current_comp {
-                    current_block.push(c);
+            Some(ch) => {
+                if let Some(_) = current_comp {
+                    current_block.push(*ch);
                 } else {
                     current_comp = Some(Inline::Text);
-                    current_block.push(c);
+                    current_block.push(*ch);
                 }
             },
+            None => {
+                break;
+            }
         }
     }
 
