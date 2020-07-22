@@ -23,11 +23,18 @@ pub enum PGComponent {
     Code(String), // Inline code
 }
 
+pub enum Inline {
+    Text,
+    Bold,
+    Italics,
+    Code,
+}
+
 /// Enum containing all supports markdown components
 #[derive(Debug)]
 pub enum MDComponent {
     Heading(u8, String),
-    Paragraph(String),
+    Paragraph(Vec<PGComponent>),
     Image(String, String),
     CodeBlock(String),
     Empty,
@@ -57,7 +64,47 @@ fn parse_code(text: &String) -> MDComponent {
 
 /// Interpret String as a paragraph and return MDComponent::Paragraph
 fn parse_paragraph(text: &String) -> MDComponent {
-    MDComponent::Paragraph(text.to_string())
+    //MDComponent::Paragraph(text.to_string())
+    
+    let mut current_comp: Option<Inline> = None;
+    let mut current_block: String = "".to_string();
+    let mut pg_vec: Vec<PGComponent> = Vec::new();
+
+    let mut text_chars = text.chars();
+
+    for c in text_chars {
+        match c {
+            '*' => {
+                match text_chars.next() {
+                    Some('*') => { // Bold
+                        let bold: String = text_chars.take_while(|x| *x != '*').skip(2).collect(); // Technically will not check for closing **, only *
+                        pg_vec.push(PGComponent::Bold(bold));
+                    },
+                    Some(c) => { // Italics
+                        let italics: String = format!("{}{}", c, text_chars.take_while(|x| *x != '*').skip(1).collect::<String>()); // bit wack
+                        pg_vec.push(PGComponent::Italics(italics));
+                    },
+                    None => { // Something went wrong
+
+                    },
+                };
+
+            },
+            '[' => {},
+            ']' => {},
+            '`' => {},
+            _ => {
+                if let Some(pc) = current_comp {
+                    current_block.push(c);
+                } else {
+                    current_comp = Some(Inline::Text);
+                    current_block.push(c);
+                }
+            },
+        }
+    }
+
+    MDComponent::Paragraph(vec![])
 }
 
 /// Accepts path to markdown file and returns Vec<MDComponent> representing the file
