@@ -90,11 +90,13 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
                 match text_chars.next() {
                     Some('*') => { // Bold
-                        let bold: String = text_chars.take_while(|x| *x != '*').skip(2).collect(); // Technically will not check for closing **, only *
+                        //let bold: String = text_chars.take_while(|x| *x != '*').skip(2).collect(); // Technically will not check for closing **, only *
+                        let bold: String = text_chars.take_while(|x| *x != '*').collect(); // Technically will not check for closing **, only *
+                        text_chars.next();
                         pg_vec.push(PGComponent::Bold(bold.to_string()));
                     },
                     Some(c) => { // Italics
-                        let italics: String = format!("{}{}", c, text_chars.take_while(|x| *x != '*').skip(1).collect::<String>()); // bit wack
+                        let italics: String = format!("{}{}", c, text_chars.take_while(|x| *x != '*').collect::<String>()); // bit wack
                         pg_vec.push(PGComponent::Italics(italics));
                     },
                     None => { // Something went wrong
@@ -109,7 +111,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
                     current_comp = None;
                 }
 
-                let text: String = text_chars.take_while(|x| *x != ']').skip(1).collect();
+                let text: String = text_chars.take_while(|x| *x != ']').collect();
                 let url: String = text_chars.skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
                 pg_vec.push(PGComponent::Hyperlink(text, url));
             },
