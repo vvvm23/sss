@@ -127,7 +127,14 @@ fn parse_paragraph(text: &String) -> MDComponent {
         }
     }
 
-    MDComponent::Paragraph(vec![])
+        
+    if let Some(Inline::Text) = current_comp {
+        pg_vec.push(PGComponent::Text(current_block));
+        current_block = "".to_string();
+        current_comp = None;
+    }
+
+    MDComponent::Paragraph(pg_vec)
 }
 
 /// Accepts path to markdown file and returns Vec<MDComponent> representing the file
