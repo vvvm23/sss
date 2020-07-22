@@ -122,7 +122,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
                     current_comp = None;
                 }
 
-                let code: String = text_chars.take_while(|x| *x != '`').skip(1).collect();
+                let code: String = text_chars.take_while(|x| *x != '`').collect();
                 pg_vec.push(PGComponent::Code(code));
             },
             Some(ch) => {
