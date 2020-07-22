@@ -88,10 +88,12 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
                     },
                 };
-
             },
-            '[' => {},
-            ']' => {},
+            '[' => {
+                let text: String = text_chars.take_while(|x| *x != ']').skip(1).collect();
+                let url: String = text_chars.skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
+                pg_vec.push(PGComponent::Hyperlink(text, url));
+            },
             '`' => {},
             _ => {
                 if let Some(pc) = current_comp {
