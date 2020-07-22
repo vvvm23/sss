@@ -2,7 +2,7 @@
 
 A minimalist static site generator written in Rust.
 
-Designed to contain only the necessary features for my use case (images, code blocks)
+Designed to contain only the necessary features for my use cases
 
 ## Installation
 
@@ -20,6 +20,7 @@ List of the supported syntax so far:
 - ATX Headings of any depth (ATX headers are # form)
 - Code Blocks in 4 space indentation form
 - Images in exclamation point form
+- Inline bold, italics, code and hyperlinks
 
 ## Configuration 
 
@@ -34,3 +35,12 @@ TODO
 ### templates/ 
 
 TODO
+
+## Things to do
+
+- Commands to generate project directories (init, new, clean, etc)
+- Auto generate post list on index.html (or, in general, auto generation of index.html)
+- Post tagging
+- More robust error handling and messages
+- HTML templating
+- Rework of styles

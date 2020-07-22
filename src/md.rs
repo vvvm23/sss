@@ -87,12 +87,12 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
                 match text_chars.next() {
                     Some('*') => { // Bold
-                        let bold: String = text_chars.take_while(|x| *x != '*').collect(); // Technically will not check for closing **, only *
+                        let bold: String = text_chars.take_while(|x| *x != '*').collect(); 
                         let closing = text_chars.next();
 
                         match closing {
                             Some('*') => (),
-                            _ => panic!("No closing asterix in bold tag!"),
+                            _ => panic!("No closing asterix in bold tag! (requires **)"),
                         };
 
                         pg_vec.push(PGComponent::Bold(bold.to_string()));
