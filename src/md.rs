@@ -23,6 +23,7 @@ pub enum PGComponent {
     Code(String), // Inline code
 }
 
+// Is this really necessary?
 pub enum Inline {
     Text,
     Bold,
@@ -72,6 +73,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
     let mut text_chars = text.chars();
 
+    // TODO: Check for unclosed tags and other such error handling
     for c in text_chars {
         match c {
             '*' => {
@@ -127,7 +129,6 @@ fn parse_paragraph(text: &String) -> MDComponent {
         }
     }
 
-        
     if let Some(Inline::Text) = current_comp {
         pg_vec.push(PGComponent::Text(current_block));
         current_block = "".to_string();

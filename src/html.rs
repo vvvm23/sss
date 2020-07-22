@@ -1,5 +1,5 @@
 use crate::cfg::{HeaderLink, SiteConfig};
-use crate::md::MDComponent;
+use crate::md::{MDComponent, PGComponent};
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
@@ -45,6 +45,20 @@ pub fn generate_header(title: &String, links: &Vec<HeaderLink>) -> String {
     ", title, generate_header_links(links))
 }
 
+pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
+    let mut para_str = "".to_string();
+    for pc in stream {
+        para_str.push_str(match pc {
+            PGComponent::Text(t) => &t,
+            PGComponent::Bold(t) => &format!("<b>{}</b>", t),
+            PGComponent::Italics(t) => &format!("<i>{}</i>", t),
+            PGComponent::Code(t) => &format!("<code>{}</code>", t),
+            PGComponent::Hyperlink(t, u) => &format!("<a href=\"{}\">{}</a>", u, t),
+        });
+    }
+    para_str
+}
+
 /// Takes a stream (Vec<MDComponent>) and a title and writes to public/index.html
 // TODO: parse title from file? MDComponent::Title 
 // TODO: define output file based on input file (maintain directory structure)
@@ -83,7 +97,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
     for mdc in stream {
         match mdc {
             MDComponent::Heading(d, t) => f.write(format!("<h{}>{}</h{}>", d, t, d).as_bytes())?,
-            MDComponent::Paragraph(t) => f.write(format!("<p>{}</p>", t).as_bytes())?,
+            MDComponent::Paragraph(ps) => f.write(generate_paragraph(ps).as_bytes())?,
             MDComponent::Image(t, u) => {
                 std::fs::copy(format!(".{}", &u), format!("{}/{}", pub_dir, &u))?;
                 f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?},
