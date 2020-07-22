@@ -106,7 +106,16 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 let url: String = text_chars.skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
                 pg_vec.push(PGComponent::Hyperlink(text, url));
             },
-            '`' => {},
+            '`' => {
+                if let Some(Inline::Text) = current_comp {
+                    pg_vec.push(PGComponent::Text(current_block));
+                    current_block = "".to_string();
+                    current_comp = None;
+                }
+
+                let code: String = text_chars.take_while(|x| *x != '`').skip(1).collect();
+                pg_vec.push(PGComponent::Code(code));
+            },
             _ => {
                 if let Some(pc) = current_comp {
                     current_block.push(c);
