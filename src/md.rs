@@ -24,6 +24,7 @@ pub enum PGComponent {
 }
 
 // Is this really necessary?
+#[derive(Copy, Clone)]
 pub enum Inline {
     Text,
     Bold,
@@ -131,8 +132,6 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
     if let Some(Inline::Text) = current_comp {
         pg_vec.push(PGComponent::Text(current_block));
-        current_block = "".to_string();
-        current_comp = None;
     }
 
     MDComponent::Paragraph(pg_vec)

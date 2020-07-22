@@ -48,13 +48,15 @@ pub fn generate_header(title: &String, links: &Vec<HeaderLink>) -> String {
 pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
     let mut para_str = "".to_string();
     for pc in stream {
-        para_str.push_str(match pc {
-            PGComponent::Text(t) => &t,
-            PGComponent::Bold(t) => &format!("<b>{}</b>", t),
-            PGComponent::Italics(t) => &format!("<i>{}</i>", t),
-            PGComponent::Code(t) => &format!("<code>{}</code>", t),
-            PGComponent::Hyperlink(t, u) => &format!("<a href=\"{}\">{}</a>", u, t),
-        });
+        let pg_str: String = match pc {
+            PGComponent::Text(t) => t,
+            PGComponent::Bold(t) => format!("<b>{}</b>", t),
+            PGComponent::Italics(t) => format!("<i>{}</i>", t),
+            PGComponent::Code(t) => format!("<code>{}</code>", t),
+            PGComponent::Hyperlink(t, u) => format!("<a href=\"{}\">{}</a>", u, t),
+        };
+        para_str.push_str(&pg_str);
+
     }
     para_str
 }
