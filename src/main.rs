@@ -36,6 +36,16 @@ fn main() {
             .help("A test argument for learning purposes.")
             .takes_value(true)
         )
+        .subcommand(App::new("new")
+            .about("Commands to create a new project."))
+            .arg(Arg::with_name("DIRECTORY")
+                 .help("Give the project directory name")
+                 .required(true)
+                 .index(1))
+        .subcommand(App::new("clean")
+            .about("Clean public/ directory"))
+        .subcommand(App::new("deploy")
+            .about("Push public/ directory to given git repository."))
         .get_matches();
 
     // Example of argument evaluation
