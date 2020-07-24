@@ -72,6 +72,17 @@ fn new(project_name: String) {
 
 fn clean() {
     print!("Cleaning public directory.. ");
+
+    let files = fs::read_dir("public/");
+    if let Err(_) = files {
+        println!("Failed to find public directory");
+        return;
+    }
+
+    for f in files.unwrap() {
+        println!("{:#?}", f.unwrap().path().display());
+    }
+
     println!("Done.\n");
 }
 
