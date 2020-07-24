@@ -30,6 +30,13 @@ fn main() {
         .version("0.1-alpha")
         .author("Alexander McKinney <alexander.f.mckinney@durham.ac.uk>")
         .about("Generates a website from a collection of markdown files")
+        .subcommand(App::new("build")
+            .about("Commands to generate a website from markdown files")
+            .arg(Arg::with_name("clean")
+                .short("c")
+                .long("clean")
+                .help("Clean before building")
+                .takes_value(false)))
         .subcommand(App::new("new")
             .about("Commands to create a new project.")
             .arg(Arg::with_name("DIRECTORY")
@@ -47,8 +54,6 @@ fn main() {
         //Some(v) => println!("{}", v),
         //None => println!("No argument.")
     //}
-    println!("{:#?}", matches);
-    println!("{:#?}", matches.subcommand());
 
     if let (_, Some(sc)) = matches.subcommand() {
         match sc.value_of("DIRECTORY") {
