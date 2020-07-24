@@ -24,10 +24,57 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
     };
 }
 
+fn p_create_dir(path: String) {
+    match fs::create_dir(path) {
+        Ok(_) => (),
+        Err(_) => panic!("Failed to create directory.."),
+    };
+}
+
+fn new(project_name: String) {
+    print!("Creating new project.. ");
+
+    if let Err(_) = fs::create_dir(format!("./{}", project_name)) {
+        println!("\nProject Directory already exists! Cancelling..\n");
+        return
+    }
+
+    let f_cfg = fs::File::create(format!("./{}/{}", project_name, "sss-config.toml"));
+    match f_cfg {
+        Ok(f) => (),
+        Err(_) => panic!("Failed to create file"),
+    };
+
+    p_create_dir(format!("./{}/{}", project_name, "posts"));
+        let f_index = fs::File::create(format!("./{}/{}", project_name, "posts/index.md"));
+        match f_index {
+            Ok(f) => (),
+            Err(_) => panic!("Failed to create file"),
+        };
+
+    p_create_dir(format!("./{}/{}", project_name, "imgs"));
+
+    p_create_dir(format!("./{}/{}", project_name, "styles"));
+        let f_styles = fs::File::create(format!("./{}/{}", project_name, "styles/style.css"));
+        match f_styles {
+            Ok(f) => (),
+            Err(_) => panic!("Failed to create file"),
+        };
+
+    p_create_dir(format!("./{}/{}", project_name, "public"));
+        p_create_dir(format!("./{}/{}", project_name, "public/posts"));
+        p_create_dir(format!("./{}/{}", project_name, "public/fonts"));
+        p_create_dir(format!("./{}/{}", project_name, "public/imgs"));
+        p_create_dir(format!("./{}/{}", project_name, "public/styles"));
+
+    println!("Done.\n");
+}
+
 fn clean() {
     print!("Cleaning public directory.. ");
     println!("Done.\n");
 }
+
 
 fn build() {
     print!("Building site into public directory.. ");
@@ -79,6 +126,11 @@ fn build() {
     println!("Site generation took {:?}", duration);
 }
 
+fn deploy() {
+    print!("Deploying to git repository.. ");
+    println!("Done.\n");
+}
+
 fn main() {
     // Define command line arguments
     let matches = App::new("Simple Static Sites")
@@ -115,7 +167,12 @@ fn main() {
     //}
 
     match matches.subcommand() {
-        ("new", Some(sc_m)) => println!("Subcommand new selected."),
+        ("new", Some(sc_m)) => {
+            match sc_m.value_of("DIRECTORY") {
+                Some(d) => new(d.to_string()),
+                None => println!("No project name specified"),
+            };
+        },
         ("build", Some(sc_m)) => {
             match sc_m.is_present("clean") {
                 true => clean(),
@@ -123,8 +180,8 @@ fn main() {
             };
             build();
         },
-        ("clean", Some(sc_m)) => println!("Subcommand clean selected."),
-        ("deploy", Some(sc_m)) => println!("Subcommand deploy selected."),
+        ("clean", Some(sc_m)) => clean(),
+        ("deploy", Some(sc_m)) => deploy(),
         _ => println!("No subcommand specified. Please specify a subcommand")
     };
 
