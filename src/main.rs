@@ -37,16 +37,20 @@ fn main() {
                 .long("clean")
                 .help("Clean before building")
                 .takes_value(false)))
+
         .subcommand(App::new("new")
             .about("Commands to create a new project.")
             .arg(Arg::with_name("DIRECTORY")
-                 .help("Give the project directory name")
-                 .required(true)
-                 .index(1)))
+                .help("Give the project directory name")
+                .required(true)
+                .index(1)))
+
         .subcommand(App::new("clean")
             .about("Clean public/ directory"))
+
         .subcommand(App::new("deploy")
             .about("Push public/ directory to given git repository."))
+
         .get_matches();
 
     // Example of argument evaluation
@@ -55,13 +59,19 @@ fn main() {
         //None => println!("No argument.")
     //}
 
-    if let (_, Some(sc)) = matches.subcommand() {
-        match sc.value_of("DIRECTORY") {
-            Some(d) => println!("{}", d),
-            None => ()
-        };
-    }
+    //match sc.value_of("DIRECTORY") {
+        //Some(d) => println!("{}", d),
+        //None => ()
+    //};
 
+
+    match matches.subcommand() {
+        ("new", Some(sc_m)) => println!("Subcommand new selected."),
+        ("build", Some(sc_m)) => println!("Subcommand build selected."),
+        ("clean", Some(sc_m)) => println!("Subcommand clean selected."),
+        ("deploy", Some(sc_m)) => println!("Subcommand deploy selected."),
+        _ => println!("No subcommand specified. Please specify a subcommand")
+    };
 
     let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
     let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
