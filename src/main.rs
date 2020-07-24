@@ -30,12 +30,6 @@ fn main() {
         .version("0.1-alpha")
         .author("Alexander McKinney <alexander.f.mckinney@durham.ac.uk>")
         .about("Generates a website from a collection of markdown files")
-        .arg(Arg::with_name("test")
-            .short("t")
-            .long("test")
-            .help("A test argument for learning purposes.")
-            .takes_value(true)
-        )
         .subcommand(App::new("new")
             .about("Commands to create a new project.")
             .arg(Arg::with_name("DIRECTORY")
@@ -49,10 +43,20 @@ fn main() {
         .get_matches();
 
     // Example of argument evaluation
-    match matches.value_of("test") {
-        Some(v) => println!("{}", v),
-        None => println!("No argument.")
+    //match matches.value_of("test") {
+        //Some(v) => println!("{}", v),
+        //None => println!("No argument.")
+    //}
+    println!("{:#?}", matches);
+    println!("{:#?}", matches.subcommand());
+
+    if let (_, Some(sc)) = matches.subcommand() {
+        match sc.value_of("DIRECTORY") {
+            Some(d) => println!("{}", d),
+            None => ()
+        };
     }
+
 
     let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
     let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
