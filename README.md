@@ -8,6 +8,9 @@ Designed to contain only the necessary features for my use cases
 
 Build from source with command `cargo run --release` assuming that cargo is installed.
 
+To install the program, run the command `cargo install --path /path/to/project/root`.
+Ensure you have added `$XDG_HOME/.cargo/bin` to your PATH.
+
 ## Usage
 
 TODO

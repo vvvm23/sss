@@ -24,7 +24,14 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
     };
 }
 
+fn clean() {
+    print!("Cleaning public directory.. ");
+    println!("Done.\n");
+}
+
 fn build() {
+    print!("Building site into public directory.. ");
+
     let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
     let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
     let toml_cfg = toml_cfg.fill_empty();
@@ -68,6 +75,7 @@ fn build() {
         convert_file(&p, &tp, &toml_cfg);
     }
     let duration = start_time.elapsed();
+    println!("Done.");
     println!("Site generation took {:?}", duration);
 }
 
@@ -106,15 +114,15 @@ fn main() {
         //None => println!("No argument.")
     //}
 
-    //match sc.value_of("DIRECTORY") {
-        //Some(d) => println!("{}", d),
-        //None => ()
-    //};
-
-
     match matches.subcommand() {
         ("new", Some(sc_m)) => println!("Subcommand new selected."),
-        ("build", Some(sc_m)) => build(),
+        ("build", Some(sc_m)) => {
+            match sc_m.is_present("clean") {
+                true => clean(),
+                false => (),
+            };
+            build();
+        },
         ("clean", Some(sc_m)) => println!("Subcommand clean selected."),
         ("deploy", Some(sc_m)) => println!("Subcommand deploy selected."),
         _ => println!("No subcommand specified. Please specify a subcommand")
