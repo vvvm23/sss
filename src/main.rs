@@ -24,55 +24,7 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
     };
 }
 
-fn main() {
-    // Define command line arguments
-    let matches = App::new("Simple Static Sites")
-        .version("0.1-alpha")
-        .author("Alexander McKinney <alexander.f.mckinney@durham.ac.uk>")
-        .about("Generates a website from a collection of markdown files")
-        .subcommand(App::new("build")
-            .about("Commands to generate a website from markdown files")
-            .arg(Arg::with_name("clean")
-                .short("c")
-                .long("clean")
-                .help("Clean before building")
-                .takes_value(false)))
-
-        .subcommand(App::new("new")
-            .about("Commands to create a new project.")
-            .arg(Arg::with_name("DIRECTORY")
-                .help("Give the project directory name")
-                .required(true)
-                .index(1)))
-
-        .subcommand(App::new("clean")
-            .about("Clean public/ directory"))
-
-        .subcommand(App::new("deploy")
-            .about("Push public/ directory to given git repository."))
-
-        .get_matches();
-
-    // Example of argument evaluation
-    //match matches.value_of("test") {
-        //Some(v) => println!("{}", v),
-        //None => println!("No argument.")
-    //}
-
-    //match sc.value_of("DIRECTORY") {
-        //Some(d) => println!("{}", d),
-        //None => ()
-    //};
-
-
-    match matches.subcommand() {
-        ("new", Some(sc_m)) => println!("Subcommand new selected."),
-        ("build", Some(sc_m)) => println!("Subcommand build selected."),
-        ("clean", Some(sc_m)) => println!("Subcommand clean selected."),
-        ("deploy", Some(sc_m)) => println!("Subcommand deploy selected."),
-        _ => println!("No subcommand specified. Please specify a subcommand")
-    };
-
+fn build() {
     let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
     let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
     let toml_cfg = toml_cfg.fill_empty();
@@ -117,4 +69,55 @@ fn main() {
     }
     let duration = start_time.elapsed();
     println!("Site generation took {:?}", duration);
+}
+
+fn main() {
+    // Define command line arguments
+    let matches = App::new("Simple Static Sites")
+        .version("0.1-alpha")
+        .author("Alexander McKinney <alexander.f.mckinney@durham.ac.uk>")
+        .about("Generates a website from a collection of markdown files")
+        .subcommand(App::new("build")
+            .about("Commands to generate a website from markdown files")
+            .arg(Arg::with_name("clean")
+                .short("c")
+                .long("clean")
+                .help("Clean before building")
+                .takes_value(false)))
+
+        .subcommand(App::new("new")
+            .about("Commands to create a new project.")
+            .arg(Arg::with_name("DIRECTORY")
+                .help("Give the project directory name")
+                .required(true)
+                .index(1)))
+
+        .subcommand(App::new("clean")
+            .about("Clean public/ directory"))
+
+        .subcommand(App::new("deploy")
+            .about("Push public/ directory to given git repository."))
+
+        .get_matches();
+
+    // Example of argument evaluation
+    //match matches.value_of("test") {
+        //Some(v) => println!("{}", v),
+        //None => println!("No argument.")
+    //}
+
+    //match sc.value_of("DIRECTORY") {
+        //Some(d) => println!("{}", d),
+        //None => ()
+    //};
+
+
+    match matches.subcommand() {
+        ("new", Some(sc_m)) => println!("Subcommand new selected."),
+        ("build", Some(sc_m)) => build(),
+        ("clean", Some(sc_m)) => println!("Subcommand clean selected."),
+        ("deploy", Some(sc_m)) => println!("Subcommand deploy selected."),
+        _ => println!("No subcommand specified. Please specify a subcommand")
+    };
+
 }
