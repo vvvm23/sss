@@ -61,6 +61,8 @@ fn new(project_name: String) {
             Err(_) => panic!("Failed to create file"),
         };
 
+    p_create_dir(format!("./{}/{}", project_name, "fonts"));
+
     p_create_dir(format!("./{}/{}", project_name, "public"));
         p_create_dir(format!("./{}/{}", project_name, "public/posts"));
         p_create_dir(format!("./{}/{}", project_name, "public/fonts"));
@@ -70,6 +72,7 @@ fn new(project_name: String) {
     println!("Done.\n");
 }
 
+// TODO: do
 fn clean() {
     print!("Cleaning public directory.. ");
 
@@ -108,6 +111,8 @@ fn build() {
         Some(p) => p,
         None => panic!(),
     };
+
+    // TODO: Copy fonts dir
 
     let pub_dir = match &toml_cfg.pub_dir {
         Some(p) => p,
@@ -170,12 +175,6 @@ fn main() {
             .about("Push public/ directory to given git repository."))
 
         .get_matches();
-
-    // Example of argument evaluation
-    //match matches.value_of("test") {
-        //Some(v) => println!("{}", v),
-        //None => println!("No argument.")
-    //}
 
     match matches.subcommand() {
         ("new", Some(sc_m)) => {
