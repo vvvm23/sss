@@ -119,22 +119,22 @@ fn build() {
 
     let index_path = match &toml_cfg.index_path {
         Some(p) => p,
-        None => panic!()
+        None => panic!("Missing index path!")
     };
 
     let posts_dir = match &toml_cfg.page_dir {
         Some(p) => p,
-        None => panic!()
+        None => panic!("Missing posts directory path!")
     };
 
     let style_path = match &toml_cfg.style_path {
         Some(p) => p,
-        None => panic!(),
+        None => panic!("Missing style path!"),
     };
 
     let pub_dir = match &toml_cfg.pub_dir {
         Some(p) => p,
-        None => panic!()
+        None => panic!("Missing public directory path!")
     };
 
     let font_files = std::fs::read_dir("fonts/");
