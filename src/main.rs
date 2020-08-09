@@ -132,12 +132,22 @@ fn build() {
         None => panic!(),
     };
 
-    // TODO: Copy fonts dir
-
     let pub_dir = match &toml_cfg.pub_dir {
         Some(p) => p,
         None => panic!()
     };
+
+    let font_files = std::fs::read_dir("fonts/");
+    for f in font_files.unwrap() {
+        let f = f.unwrap().path();
+        let f = f.to_str();
+        let f = match f {
+            Some(s) => s,
+            None => panic!()
+        };
+
+        fs::copy(f, format!("{}{}", pub_dir, f));
+    }
 
     let start_time = std::time::Instant::now();
 
