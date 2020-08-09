@@ -183,11 +183,6 @@ fn build() {
     println!("Site generation took {:?}", duration);
 }
 
-fn deploy() {
-    print!("Deploying to git repository.. ");
-    println!("Done.\n");
-}
-
 fn main() {
     // Define command line arguments
     let matches = App::new("Simple Static Sites")
@@ -212,9 +207,6 @@ fn main() {
         .subcommand(App::new("clean")
             .about("Clean public/ directory"))
 
-        .subcommand(App::new("deploy")
-            .about("Push public/ directory to given git repository."))
-
         .get_matches();
 
     match matches.subcommand() {
@@ -232,7 +224,6 @@ fn main() {
             build();
         },
         ("clean", Some(sc_m)) => clean(),
-        ("deploy", Some(sc_m)) => deploy(),
         _ => println!("No subcommand specified. Please specify a subcommand")
     };
 
