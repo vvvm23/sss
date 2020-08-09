@@ -7,27 +7,88 @@
     /*font-family: "monaco-woff", serif*/
 /*}*/
 
-@font-face {
-    font-family: "VeraSerif-woff";
-    src: url(/fonts/VeraSerif-webfont.woff)
-}
+
+/*@font-face {*/
+    /*font-family: "courier-woff";*/
+    /*src: url(/fonts/CourierPrime-Regular.ttf);*/
+/*}*/
+/*@font-face {*/
+    /*font-family: "courier-bold-woff";*/
+    /*src: url(/fonts/CourierPrime-Bold.ttf);*/
+/*}*/
+/*@font-face {*/
+    /*font-family: "courier-italic-woff";*/
+    /*src: url(/fonts/CourierPrime-Italic.ttf);*/
+/*}*/
+/*@font-face {*/
+    /*font-family: "courier-bold-italic-woff";*/
+    /*src: url(/fonts/CourierPrime-BoldItalic.ttf);*/
+/*}*/
+
+/*p {*/
+    /*font-family: "courier-woff";*/
+/*}*/
+
+/*i {*/
+    /*font-family: "courier-italic-woff";*/
+/*}*/
+
+/*b {*/
+    /*font-family: "courier-woff";*/
+/*}*/
+
+/*.header, h1, h2, h3, h4, h5 {*/
+    /*font-family: "VeraSerif-Bold-woff";*/
+/*}*/
+
 
 @font-face {
-    font-family: "VeraSerif-Bold-woff";
-    src: url(/fonts/VeraSerif-Bold-webfont.woff)
+    font-family: "assistant-regular";
+    src: url(/fonts/assistant-regular-webfont.woff);
+}
+@font-face {
+    font-family: "assistant-bold";
+    src: url(/fonts/assistant-bold-webfont.woff);
 }
 
-body p {
-    font-family: "VeraSerif-woff"
+p, a, .content figure figcaption {
+    font-family: "assistant-regular";
 }
 
-body p b {
-    font-family: "VeraSerif-Bold-woff";
+b, .sitetitle, h1, h2, h3, h4, h5 {
+    font-family: "assistant-bold";
 }
 
-body h {
-    font-family: "VeraSerif-Bold-woff";
+body {
+    background-color: #f5f5f5;
 }
+
+/*@font-face {*/
+    /*font-family: "VeraSerif-woff";*/
+    /*src: url(/fonts/VeraSerif-webfont.woff)*/
+/*}*/
+
+/*@font-face {*/
+    /*font-family: "VeraSerif-Bold-woff";*/
+    /*src: url(/fonts/VeraSerif-Bold-webfont.woff)*/
+/*}*/
+
+/*body p {*/
+    /*font-family: "VeraSerif-woff";*/
+/*}*/
+
+/*.content figure figcaption {*/
+    /*font-family: "VeraSerif-woff";*/
+/*}*/
+
+/*body p b {*/
+    /*font-family: "VeraSerif-Bold-woff";*/
+/*}*/
+
+/*h1, h2, h3, h4, h5, h6 {*/
+    /*font-family: "VeraSerif-Bold-woff";*/
+/*}*/
+
 
 /*.header {*/
     /*padding: 50px;*/
@@ -108,3 +169,20 @@ img {
     border: 1px solid #999;
     padding: 10px;
 }
+
+blockquote {
+    display: block;
+    margin: 10px;
+    padding: 15px;
+    background: #ddd;
+    border-radius: 5px;
+    font-family: "assistant-regular";
+}
+
+/*blockquote p::before {*/
+    /*content: '\201C';*/
+/*}*/
+
+/*blockquote p::after {*/
+    /*content: '\201D';*/
+/*}*/

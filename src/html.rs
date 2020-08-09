@@ -107,6 +107,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
                 std::fs::copy(format!(".{}", &u), format!("{}/{}", pub_dir, &u))?;
                 f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?},
             MDComponent::CodeBlock(t) => f.write(format!("<pre><code>{}</code></pre>", t).as_bytes())?,
+            MDComponent::Quote(t) => f.write(format!("<blockquote>{}</blockquote>", t).as_bytes())?,
             MDComponent::Empty => f.write("".as_bytes())?,
         };
     }

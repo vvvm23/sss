@@ -39,6 +39,7 @@ pub enum MDComponent {
     Paragraph(Vec<PGComponent>),
     Image(String, String),
     CodeBlock(String),
+    Quote(String),
     Empty,
 }
 
@@ -47,6 +48,7 @@ pub enum MDComponent {
 enum Block {
     Code,
     Paragraph,
+    Quote,
 }
 
 /// Interpret Chars as a heading and return MDComponent::Heading
@@ -149,6 +151,10 @@ fn parse_paragraph(text: &String) -> MDComponent {
     MDComponent::Paragraph(pg_vec)
 }
 
+pub fn parse_quote(text: &String) -> MDComponent {
+    MDComponent::Quote(text.to_string())
+}
+
 /// Accepts path to markdown file and returns Vec<MDComponent> representing the file
 pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
     let f = File::open(path)?;
@@ -170,6 +176,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 let md_cc = match current_block {
                     Some(Block::Paragraph) => Some(parse_paragraph(&block)),
                     Some(Block::Code) => Some(parse_code(&block)),
+                    Some(Block::Quote) => Some(parse_code(&block)),
                     None => None,
                 };
 
@@ -181,11 +188,30 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
                 Some(parse_heading(&mut line_chars))
             },
+            Some('>') => { // Found a block quote
+                let md_cc = match current_block {
+                    Some(Block::Paragraph) => Some(parse_paragraph(&block)),
+                    Some(Block::Code) => Some(parse_code(&block)),
+                    Some(Block::Quote) => None,
+                    None => None,
+                };
+
+                if let Some(b) = md_cc {
+                    md_vec.push(b);
+                    block = "".to_string();
+                }
+
+                current_block = Some(Block::Quote);
+                block.push_str(&line.chars().skip(2).collect::<String>());
+                block.push_str(" ");
+                None
+            }
             Some(' ') => { // Potentially found a code block
                 if line_chars.take(3).collect::<String>() == "   " {
                     let md_cc = match current_block {
                         Some(Block::Code) => None,
                         Some(Block::Paragraph) => Some(parse_paragraph(&block)),
+                        Some(Block::Quote) => Some(parse_quote(&block)),
                         None => None,
                     };
 
@@ -201,6 +227,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 } else { 
                     let md_cc = match current_block {
                         Some(Block::Code) => Some(parse_code(&block)),
+                        Some(Block::Quote) => Some(parse_quote(&block)),
                         Some(Block::Paragraph) => None,
                         None => None,
                     };
@@ -223,6 +250,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
             }
             None => {
                 let md_cc = match current_block {
+                    Some(Block::Quote) => Some(parse_quote(&block)),
                     Some(Block::Paragraph) => Some(parse_paragraph(&block)),
                     Some(Block::Code) => Some(parse_code(&block)),
                     None => None,
@@ -254,6 +282,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
     // Add final block
     let md_cc = match current_block {
+        Some(Block::Quote) => Some(parse_quote(&block)),
         Some(Block::Paragraph) => Some(parse_paragraph(&block)),
         Some(Block::Code) => Some(parse_code(&block)),
         None => None,
