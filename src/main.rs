@@ -82,8 +82,28 @@ fn clean() {
         return;
     }
 
+    let files = fs::read_dir("public/fonts");
     for f in files.unwrap() {
-        println!("{:#?}", f.unwrap().path().display());
+        let f = f.unwrap();
+        std::fs::remove_file(f.path());
+    }
+
+    let files = fs::read_dir("public/posts");
+    for f in files.unwrap() {
+        let f = f.unwrap();
+        std::fs::remove_file(f.path());
+    }
+
+    let files = fs::read_dir("public/imgs");
+    for f in files.unwrap() {
+        let f = f.unwrap();
+        std::fs::remove_file(f.path());
+    }
+
+    let files = fs::read_dir("public/styles");
+    for f in files.unwrap() {
+        let f = f.unwrap();
+        std::fs::remove_file(f.path());
     }
 
     println!("Done.\n");
