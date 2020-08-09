@@ -24,6 +24,8 @@ List of the supported syntax so far:
 - Code Blocks in 4 space indentation form
 - Images in exclamation point form
 - Inline bold, italics, code and hyperlinks
+- Block Quotes (no inner md support yet though)
+- Inject HTML by simply writing it normally (a "feature" I guess)
 
 ## Configuration 
 
@@ -41,7 +43,6 @@ TODO
 
 ## Things to do
 
-- Commands to generate project directories (init, new, clean, etc)
 - Auto generate post list on index.html (or, in general, auto generation of index.html)
 - Post tagging
 - More robust error handling and messages
