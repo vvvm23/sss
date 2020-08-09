@@ -47,7 +47,7 @@ pub fn generate_header(title: &String, links: &Vec<HeaderLink>) -> String {
 
 /// Generate HTML from paragraph stream
 pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
-    let mut para_str = "".to_string();
+    let mut para_str = "<p>".to_string();
     for pc in stream {
         // For each PGComponent, generate corresponding HTML and append to string
         let pg_str: String = match pc {
@@ -58,8 +58,9 @@ pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
             PGComponent::Hyperlink(t, u) => format!("<a href=\"{}\">{}</a>", u, t),
         };
         para_str.push_str(&pg_str);
-
+        
     }
+    para_str.push_str("</p>");
     para_str
 }
 

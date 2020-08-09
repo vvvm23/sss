@@ -1,10 +1,32 @@
+/*@font-face {*/
+    /*font-family: "monaco-woff";*/
+    /*src: url(/fonts/monaco.woff)*/
+/*}*/
+
+/*body {*/
+    /*font-family: "monaco-woff", serif*/
+/*}*/
+
 @font-face {
-    font-family: "monaco-woff";
-    src: url(/fonts/monaco.woff)
+    font-family: "VeraSerif-woff";
+    src: url(/fonts/VeraSerif-webfont.woff)
 }
 
-body {
-    font-family: "monaco-woff"
+@font-face {
+    font-family: "VeraSerif-Bold-woff";
+    src: url(/fonts/VeraSerif-Bold-webfont.woff)
+}
+
+body p {
+    font-family: "VeraSerif-woff"
+}
+
+body p b {
+    font-family: "VeraSerif-Bold-woff";
+}
+
+body h {
+    font-family: "VeraSerif-Bold-woff";
 }
 
 /*.header {*/
