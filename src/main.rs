@@ -72,39 +72,45 @@ fn new(project_name: String) {
     println!("Done.\n");
 }
 
-// TODO: do
 fn clean() {
     print!("Cleaning public directory.. ");
+    let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
+    let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
+    let toml_cfg = toml_cfg.fill_empty();
 
-    let files = fs::read_dir("public/");
+    let pub_dir = &toml_cfg.pub_dir.unwrap();
+
+    let files = fs::read_dir(pub_dir);
     if let Err(_) = files {
         println!("Failed to find public directory");
         return;
     }
 
-    let files = fs::read_dir("public/fonts");
+    let files = fs::read_dir(format!("{}/fonts", pub_dir));
     for f in files.unwrap() {
         let f = f.unwrap();
         std::fs::remove_file(f.path());
     }
 
-    let files = fs::read_dir("public/posts");
+    let files = fs::read_dir(format!("{}/posts", pub_dir));
     for f in files.unwrap() {
         let f = f.unwrap();
         std::fs::remove_file(f.path());
     }
 
-    let files = fs::read_dir("public/imgs");
+    let files = fs::read_dir(format!("{}/imgs", pub_dir));
     for f in files.unwrap() {
         let f = f.unwrap();
         std::fs::remove_file(f.path());
     }
 
-    let files = fs::read_dir("public/styles");
+    let files = fs::read_dir(format!("{}/styles", pub_dir));
     for f in files.unwrap() {
         let f = f.unwrap();
         std::fs::remove_file(f.path());
     }
+
+    std::fs::remove_file(format!("{}/index.html", pub_dir));
 
     println!("Done.\n");
 }
@@ -137,7 +143,12 @@ fn build() {
         None => panic!("Missing public directory path!")
     };
 
-    let font_files = std::fs::read_dir("fonts/");
+    let font_dir = match &toml_cfg.fonts_dir {
+        Some(p) => p,
+        None => panic!("Missing fonts directory path!")
+    };
+
+    let font_files = std::fs::read_dir(font_dir);
     for f in font_files.unwrap() {
         let f = f.unwrap().path();
         let f = f.to_str();
@@ -146,7 +157,7 @@ fn build() {
             None => panic!()
         };
 
-        fs::copy(f, format!("{}{}", pub_dir, f));
+        fs::copy(f, format!("{}/{}", pub_dir, f));
     }
 
     let start_time = std::time::Instant::now();

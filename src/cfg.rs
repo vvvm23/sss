@@ -12,6 +12,7 @@ pub struct SiteConfig {
     pub style_path: Option<String>, // path to style.css file that was be copied to $pub_dir/styles/style.css
     pub page_dir: Option<String>, // path to directory containing markdown files for pages
     pub pub_dir: Option<String>, // path to output directory where resulting website is placed
+    pub fonts_dir: Option<String>, // path to directory containing website fonts
 }
 
 // TODO: A new struct with no Option in the fields. fill_empty will return this
@@ -33,6 +34,7 @@ impl SiteConfig {
 
         if let None = self.style_path { self.style_path = Some("styles/style.css".to_string()) } // defaults to styles/style.css
         if let None = self.pub_dir { self.pub_dir = Some("public/".to_string()) } // defaults to public/
+        if let None = self.fonts_dir { self.fonts_dir = Some("fonts/".to_string()) } // defaults to fonts/
         self
     }
 }
