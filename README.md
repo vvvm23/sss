@@ -43,8 +43,7 @@ TODO
 
 ## Things to do
 
-- Auto generate post list on index.html (or, in general, auto generation of index.html)
 - Post tagging
-- More robust error handling and messages
 - HTML templating
 - Rework of styles
+- In general, more resistant to misuse and more error handling
