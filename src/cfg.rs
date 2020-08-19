@@ -39,3 +39,13 @@ impl SiteConfig {
     }
 }
 
+#[derive(Debug, Serialize, Deserialize)]
+pub struct Post {
+    pub title: Option<String>,
+    pub url: Option<String>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct PostConfig {
+    pub posts: Option<Vec<Post>>
+}

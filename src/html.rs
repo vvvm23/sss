@@ -88,7 +88,6 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
 
     let f = File::create(format!("{}/{}", pub_dir, path)).expect("Unable to create file");
     let mut f = BufWriter::new(f);
-
     f.write("<html>".as_bytes())?;
     let head = generate_head(&title, &style_path);
     f.write(head.as_bytes())?;

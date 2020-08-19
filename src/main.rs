@@ -20,7 +20,7 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
 
     match html::stream_to_html(stream, &target_name, &site_cfg) {
         Ok(_) => (),
-        Err(_) => println!("Failed to parse stream into HTML.")
+        Err(_) => panic!("Failed to parse stream into HTML.")
     };
 }
 
@@ -41,6 +41,12 @@ fn new(project_name: String) {
 
     let f_cfg = fs::File::create(format!("./{}/{}", project_name, "sss-config.toml"));
     match f_cfg {
+        Ok(f) => (),
+        Err(_) => panic!("Failed to create file"),
+    };
+
+    let p_cfg = fs::File::create(format!("./{}/{}", project_name, "posts.toml"));
+    match p_cfg {
         Ok(f) => (),
         Err(_) => panic!("Failed to create file"),
     };
@@ -123,6 +129,9 @@ fn build() {
     let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
     let toml_cfg = toml_cfg.fill_empty();
 
+    let posts_string: String = fs::read_to_string("posts.toml").expect("Failed to open posts.toml");
+    let posts_cfg: cfg::PostConfig = toml::from_str(&posts_string).unwrap();
+
     let index_path = match &toml_cfg.index_path {
         Some(p) => p,
         None => panic!("Missing index path!")
@@ -168,16 +177,46 @@ fn build() {
         Err(_) => println!("Failed to copy style file")
     }
 
-    convert_file(index_path, &"index.html".to_string(), &toml_cfg);
+
+    let posts = match posts_cfg.posts {
+        Some(p) => p,
+        None => vec![]
+    };
+
+    //convert_file(index_path, &"index.html".to_string(), &toml_cfg);
+    let index_stream = md::parse_md_file(&index_path);
+    let mut index_stream = match index_stream {
+        Ok(s) => s,
+        _ => panic!("Failed to obtain stream")
+    };
+
+    index_stream.push(md::MDComponent::Heading(3, "Recent Posts".to_string()));
 
     let paths = fs::read_dir(posts_dir).unwrap();
-    for p in paths {
-        let p = format!("{}", p.unwrap().path().display());
-        let mut target_name: String = p.chars().take_while(|x| *x != '.').collect();
-        target_name.push_str(".html");
-        let tp = target_name;
-        convert_file(&p, &tp, &toml_cfg);
+    //for p in paths {
+        //let p = format!("{}", p.unwrap().path().display());
+        //let mut target_name: String = p.chars().take_while(|x| *x != '.').collect();
+        //target_name.push_str(".html");
+        //let tp = target_name;
+        //convert_file(&p, &tp, &toml_cfg);
+    //}
+    
+    for p in posts {
+        let url = p.url.unwrap();
+        let title = p.title.unwrap();
+
+        let mut tp: String = url.chars().take_while(|x| *x != '.').collect();
+        tp.push_str(".html");
+        convert_file(&url, &tp, &toml_cfg);
+
+        let link_block = md::MDComponent::Paragraph(vec![md::PGComponent::Hyperlink(title, tp)]);
+        index_stream.push(link_block);
+
     }
+    match html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg) {
+        Ok(_) => (),
+        Err(_) => println!("Failed to parse stream into HTML.")
+    };
     let duration = start_time.elapsed();
     println!("Done.");
     println!("Site generation took {:?}", duration);

@@ -1,0 +1,7 @@
+[[posts]]
+title = "Test Post 1"
+url = "/posts/01.md"
+
+[[posts]]
+title = "Test Post 2"
+url = "/posts/02.md"
