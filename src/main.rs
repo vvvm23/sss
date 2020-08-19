@@ -10,6 +10,7 @@ use clap::{Arg, App};
 use toml;
 
 use std::fs;
+use std::io::Write;
 
 fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfig) {
     let stream = md::parse_md_file(&source_name);
@@ -222,6 +223,28 @@ fn build() {
     println!("Site generation took {:?}", duration);
 }
 
+fn add(title: &str, path: &str) {
+    let file = std::fs::OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open("posts.toml");
+
+    let mut file = match file {
+        Ok(f) => f,
+        Err(_) => panic!("Failed to open posts.toml")
+    };
+
+    writeln!(file, "\n[[posts]]");
+    writeln!(file, "{}", format!("title = \"{}\"", title));
+    writeln!(file, "{}", format!("url = \"posts/{}.md\"", path));
+
+    let f_post = fs::File::create(format!("./posts/{}.md", path));
+    match f_post {
+        Ok(_) => (),
+        Err(_) => panic!("Failed to create post file!")
+    };
+}
+
 fn main() {
     // Define command line arguments
     let matches = App::new("Simple Static Sites")
@@ -246,6 +269,17 @@ fn main() {
         .subcommand(App::new("clean")
             .about("Clean public/ directory"))
 
+        .subcommand(App::new("add")
+            .about("Add a new post to the site")
+            .arg(Arg::with_name("TITLE")
+                 .help("Human-readable title of the post.")
+                 .required(true)
+                 .index(1))
+            .arg(Arg::with_name("FILE")
+                 .help("File name of the new post.")
+                 .required(true)
+                 .index(2)))
+
         .get_matches();
 
     match matches.subcommand() {
@@ -263,6 +297,13 @@ fn main() {
             build();
         },
         ("clean", Some(sc_m)) => clean(),
+        ("add", Some(sc_m)) => {
+            match (sc_m.value_of("TITLE"), sc_m.value_of("FILE")) {
+                (None, _) => println!("Missing argument"),
+                (_, None) => println!("Missing argument"),
+                (Some(t), Some(f)) => add(t, f)
+            }
+        }
         _ => println!("No subcommand specified. Please specify a subcommand")
     };
 

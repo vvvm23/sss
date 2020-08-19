@@ -139,6 +139,10 @@ img {
     max-width: 100%;
 }
 
+p a {
+    color: black;
+}
+
 .content figure figcaption {
     font-style: italic;
     font-size: 14px;
