@@ -184,6 +184,8 @@ fn build() {
         None => vec![]
     };
 
+    let posts: Vec<cfg::Post> = posts.into_iter().rev().collect();
+
     //convert_file(index_path, &"index.html".to_string(), &toml_cfg);
     let index_stream = md::parse_md_file(&index_path);
     let mut index_stream = match index_stream {
@@ -224,6 +226,7 @@ fn build() {
 }
 
 fn add(title: &str, path: &str) {
+    print!("Adding new post.. ");
     let file = std::fs::OpenOptions::new()
         .write(true)
         .append(true)
@@ -238,11 +241,16 @@ fn add(title: &str, path: &str) {
     writeln!(file, "{}", format!("title = \"{}\"", title));
     writeln!(file, "{}", format!("url = \"posts/{}.md\"", path));
 
+    // TODO: If the file exists, maybe don't delete?
+    // TODO: Or perhaps a separate command for the above
     let f_post = fs::File::create(format!("./posts/{}.md", path));
     match f_post {
         Ok(_) => (),
         Err(_) => panic!("Failed to create post file!")
     };
+
+    println!("Done.");
+    println!("Created new post \"{}\"", title);
 }
 
 fn main() {
