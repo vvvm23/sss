@@ -102,7 +102,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
                 f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?},
             MDComponent::CodeBlock(t) => f.write(format!("<pre><code>{}</code></pre>", t).as_bytes())?,
             MDComponent::Quote(t) => f.write(format!("<blockquote>{}</blockquote>", t).as_bytes())?,
-            MDComponent::Empty => f.write("".as_bytes())?,
+            //MDComponent::Empty => f.write("".as_bytes())?,
         };
     }
     f.write("</div>".as_bytes())?;

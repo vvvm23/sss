@@ -23,7 +23,7 @@ pub enum PGComponent {
     Code(String), // Inline code
 }
 
-// Is this really necessary?
+// TODO: Is this really necessary?
 #[derive(Copy, Clone)]
 pub enum Inline {
     Text,
@@ -40,7 +40,6 @@ pub enum MDComponent {
     Image(String, String),
     CodeBlock(String),
     Quote(String),
-    Empty,
 }
 
 /// Used for defining the current block for multi-line blocks
@@ -171,7 +170,6 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
         let c = line_chars.next();
 
         let md_c = match c {
-            // A bit dirty..
             Some('#') => { // Found a heading
                 let md_cc = match current_block {
                     Some(Block::Paragraph) => Some(parse_paragraph(&block)),

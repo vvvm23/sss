@@ -5,7 +5,7 @@ mod html;
 mod cfg;
 mod md;
 
-use crate::cfg::{HeaderLink, SiteConfig, SiteConfigToml};
+use crate::cfg::SiteConfig;
 use clap::{Arg, App};
 use toml;
 
@@ -26,9 +26,9 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
 }
 
 fn p_create_dir(path: String) {
-    match fs::create_dir(path) {
+    match fs::create_dir(&path) {
         Ok(_) => (),
-        Err(_) => panic!("Failed to create directory.."),
+        Err(_) => panic!("Failed to create directory. {}", &path),
     };
 }
 
@@ -41,32 +41,20 @@ fn new(project_name: String) {
     }
 
     let f_cfg = fs::File::create(format!("./{}/{}", project_name, "sss-config.toml"));
-    match f_cfg {
-        Ok(f) => (),
-        Err(_) => panic!("Failed to create file"),
-    };
+    if let Err(_) = f_cfg { panic!("Failed to create sss-config.toml") };
 
     let p_cfg = fs::File::create(format!("./{}/{}", project_name, "posts.toml"));
-    match p_cfg {
-        Ok(f) => (),
-        Err(_) => panic!("Failed to create file"),
-    };
+    if let Err(_) = p_cfg { panic!("Failed to create posts.toml") };
 
     p_create_dir(format!("./{}/{}", project_name, "posts"));
         let f_index = fs::File::create(format!("./{}/{}", project_name, "posts/index.md"));
-        match f_index {
-            Ok(f) => (),
-            Err(_) => panic!("Failed to create file"),
-        };
+        if let Err(_) = f_index { panic!("Failed to create index.md") };
 
     p_create_dir(format!("./{}/{}", project_name, "imgs"));
 
     p_create_dir(format!("./{}/{}", project_name, "styles"));
         let f_styles = fs::File::create(format!("./{}/{}", project_name, "styles/style.css"));
-        match f_styles {
-            Ok(f) => (),
-            Err(_) => panic!("Failed to create file"),
-        };
+        if let Err(_) = f_styles { panic!("Failed to create style.css") };
 
     p_create_dir(format!("./{}/{}", project_name, "fonts"));
 
@@ -79,7 +67,7 @@ fn new(project_name: String) {
     println!("Done.\n");
 }
 
-fn clean() {
+fn clean() -> Result<(), std::io::Error> {
     print!("Cleaning public directory.. ");
     let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
     let toml_cfg: cfg::SiteConfigToml = toml::from_str(&toml_string).unwrap();
@@ -88,38 +76,39 @@ fn clean() {
     let pub_dir = &toml_cfg.pub_dir;
 
     let files = fs::read_dir(pub_dir);
-    if let Err(_) = files {
+    if let Err(e) = files {
         println!("Failed to find public directory");
-        return;
+        return Err(e);
     }
 
     let files = fs::read_dir(format!("{}/fonts", pub_dir));
     for f in files.unwrap() {
         let f = f.unwrap();
-        std::fs::remove_file(f.path());
+        std::fs::remove_file(f.path())?;
     }
 
     let files = fs::read_dir(format!("{}/posts", pub_dir));
     for f in files.unwrap() {
         let f = f.unwrap();
-        std::fs::remove_file(f.path());
+        std::fs::remove_file(f.path())?;
     }
 
     let files = fs::read_dir(format!("{}/imgs", pub_dir));
     for f in files.unwrap() {
         let f = f.unwrap();
-        std::fs::remove_file(f.path());
+        std::fs::remove_file(f.path())?;
     }
 
     let files = fs::read_dir(format!("{}/styles", pub_dir));
     for f in files.unwrap() {
         let f = f.unwrap();
-        std::fs::remove_file(f.path());
+        std::fs::remove_file(f.path())?;
     }
 
-    std::fs::remove_file(format!("{}/index.html", pub_dir));
+    std::fs::remove_file(format!("{}/index.html", pub_dir))?;
 
     println!("Done.\n");
+    Ok(())
 }
 
 
@@ -134,7 +123,6 @@ fn build() {
     let posts_cfg: cfg::PostConfig = toml::from_str(&posts_string).unwrap();
 
     let index_path = &toml_cfg.index_path;
-    let posts_dir = &toml_cfg.page_dir;
     let style_path = &toml_cfg.style_path;
     let pub_dir = &toml_cfg.pub_dir;
     let font_dir = &toml_cfg.fonts_dir;
@@ -174,8 +162,6 @@ fn build() {
 
     index_stream.push(md::MDComponent::Heading(3, "Recent Posts".to_string()));
 
-    let paths = fs::read_dir(posts_dir).unwrap();
-    
     for p in posts {
         let url = p.url.unwrap();
         let title = p.title.unwrap();
@@ -218,7 +204,7 @@ fn add(title: &str, path: &str) {
     let f_post = fs::File::create(format!("./posts/{}.md", path));
     match f_post {
         Ok(_) => (),
-        Err(_) => panic!("Failed to create post file!")
+        Err(_) => panic!("Failed to create post file! {}", path)
     };
 
     println!("Done.");
@@ -270,13 +256,12 @@ fn main() {
             };
         },
         ("build", Some(sc_m)) => {
-            match sc_m.is_present("clean") {
-                true => clean(),
-                false => (),
-            };
+            if sc_m.is_present("clean") {
+                clean();
+            }
             build();
         },
-        ("clean", Some(sc_m)) => clean(),
+        ("clean", Some(_)) => { clean(); },
         ("add", Some(sc_m)) => {
             match (sc_m.value_of("TITLE"), sc_m.value_of("FILE")) {
                 (None, _) => println!("Missing argument"),
