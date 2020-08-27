@@ -12,7 +12,7 @@ use crate::md::{MDComponent, PGComponent};
 use std::fs::File;
 use std::io::{BufWriter, Write};
 
-/// Generate HTML <head> block
+/// Generate HTML head block
 pub fn generate_head(title: &String, style_path: &String) -> String {
     // TODO: Optional highlight.js
     // TODO: If highlight.js is wanted, should obtain a local copy so it can work offline.
@@ -74,7 +74,7 @@ pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
     para_str
 }
 
-/// Takes a stream (Vec<MDComponent>) and a title and writes to public/index.html
+/// Takes a stream (Vec<MDComponent>) and a title and writes to HTML file
 pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteConfig) -> std::io::Result<()> {
     let title = &site_cfg.title;
     let style_path = &site_cfg.style_path;

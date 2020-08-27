@@ -1,5 +1,5 @@
 #[derive(Debug, Serialize, Deserialize)]
-/// One link in the page header
+/// Struct containing data for a link in the header
 pub struct HeaderLink {
     pub name: Option<String>, // display name for link
     pub url: Option<String>, // actual target for link

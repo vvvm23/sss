@@ -13,7 +13,7 @@ use std::io::BufReader;
 use std::fs::File;
 use std::io::prelude::*;
 
-/// Enum containing paragraph components
+/// Enum containing all supported paragraph markdown components
 #[derive(Debug)]
 pub enum PGComponent {
     Text(String), // Default type
@@ -23,7 +23,7 @@ pub enum PGComponent {
     Code(String), // Inline code
 }
 
-/// Enum containing all supports markdown components
+/// Enum containing all supported markdown components
 #[derive(Debug)]
 pub enum MDComponent {
     Heading(u8, String),
@@ -132,11 +132,12 @@ fn parse_paragraph(text: &String) -> MDComponent {
     MDComponent::Paragraph(pg_vec)
 }
 
+/// Interpret String as a quote block and return MDComponent::Quote
 pub fn parse_quote(text: &String) -> MDComponent {
     MDComponent::Quote(text.to_string())
 }
 
-/// Accepts path to markdown file and returns Vec<MDComponent> representing the file
+/// Takes path to markdown file and returns Vec<MDComponent> representing the file
 pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
     let f = File::open(path)?;
     let f = BufReader::new(f);
@@ -255,7 +256,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
         if let Some(c) = md_c {
             md_vec.push(c);
-            block = "".to_string(); //
+            block = "".to_string(); 
         }
 
     }
