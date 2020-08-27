@@ -1,9 +1,11 @@
 #[derive(Debug, Serialize, Deserialize)]
+/// One link in the page header
 pub struct HeaderLink {
     pub name: Option<String>, // display name for link
     pub url: Option<String>, // actual target for link
 }
 
+/// "Concrete" struct equivalent of SiteConfigToml
 pub struct SiteConfig {
     pub title: String, // site title, will appear in header and in browser title
     pub header_links: Vec<HeaderLink>, // array of links in the header
@@ -15,6 +17,7 @@ pub struct SiteConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+/// Struct to contain data from TOML file with unknown presence of fields
 pub struct SiteConfigToml {
     pub title: Option<String>, // site title, will appear in header and in browser title
     pub header_links: Option<Vec<HeaderLink>>, // array of links in the header
@@ -25,7 +28,7 @@ pub struct SiteConfigToml {
     pub fonts_dir: Option<String>, // path to directory containing website fonts
 }
 
-
+/// Build an equivalent struct (SiteConfig) with no Option<> fields
 impl SiteConfigToml {
     pub fn build_cfg(self) -> SiteConfig {
         let mut cfg = SiteConfig::new();
@@ -42,6 +45,7 @@ impl SiteConfigToml {
 }
 
 impl SiteConfig {
+    /// Generate SiteConfig with default values
     pub fn new() -> Self {
         Self {
             title: "Default Site Title".to_string(),
@@ -56,12 +60,14 @@ impl SiteConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+/// Meta struct, defining a single post
 pub struct Post {
     pub title: Option<String>,
     pub url: Option<String>
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+/// Struct containing contents of post TOML file.
 pub struct PostConfig {
     pub posts: Option<Vec<Post>>
 }
