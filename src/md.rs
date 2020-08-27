@@ -23,15 +23,6 @@ pub enum PGComponent {
     Code(String), // Inline code
 }
 
-// TODO: Is this really necessary?
-#[derive(Copy, Clone)]
-pub enum Inline {
-    Text,
-    Bold,
-    Italics,
-    Code,
-}
-
 /// Enum containing all supports markdown components
 #[derive(Debug)]
 pub enum MDComponent {
@@ -67,7 +58,6 @@ fn parse_code(text: &String) -> MDComponent {
 
 /// Interpret String as a paragraph and return MDComponent::Paragraph
 fn parse_paragraph(text: &String) -> MDComponent {
-    let mut current_comp: Option<Inline> = None;
     let mut current_block: String = "".to_string();
     let mut pg_vec: Vec<PGComponent> = Vec::new();
 
@@ -80,10 +70,9 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
         match c {
             Some('*') => { // Some form of emphasis
-                if let Some(Inline::Text) = current_comp {
+                if current_block.len() > 0 {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
-                    current_comp = None;
                 }
 
                 match text_chars.next() {
@@ -108,10 +97,9 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 };
             },
             Some('[') => { // Inline link
-                if let Some(Inline::Text) = current_comp {
+                if current_block.len() > 0 {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
-                    current_comp = None;
                 }
 
                 let text: String = text_chars.take_while(|x| *x != ']').collect();
@@ -119,22 +107,16 @@ fn parse_paragraph(text: &String) -> MDComponent {
                 pg_vec.push(PGComponent::Hyperlink(text, url));
             },
             Some('`') => { // Inline code
-                if let Some(Inline::Text) = current_comp {
+                if current_block.len() > 0 {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
-                    current_comp = None;
                 }
 
                 let code: String = text_chars.take_while(|x| *x != '`').collect();
                 pg_vec.push(PGComponent::Code(code));
             },
             Some(ch) => { // Any other character
-                if let Some(_) = current_comp {
-                    current_block.push(*ch);
-                } else {
-                    current_comp = Some(Inline::Text);
-                    current_block.push(*ch);
-                }
+                current_block.push(*ch);
             },
             None => { // Reached end of iterator
                 break;
@@ -143,7 +125,7 @@ fn parse_paragraph(text: &String) -> MDComponent {
     }
 
     // Flush remaining block as text
-    if let Some(Inline::Text) = current_comp {
+    if current_block.len() > 0 {
         pg_vec.push(PGComponent::Text(current_block));
     }
 
