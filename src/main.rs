@@ -112,7 +112,8 @@ fn clean() -> Result<(), std::io::Error> {
 }
 
 
-fn build() {
+fn build() -> Result<(), std::io::Error>
+{
     print!("Building site into public directory.. ");
 
     let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
@@ -136,7 +137,7 @@ fn build() {
             None => panic!()
         };
 
-        fs::copy(f, format!("{}/{}", pub_dir, f));
+        fs::copy(f, format!("{}/{}", pub_dir, f))?;
     }
 
     let start_time = std::time::Instant::now();
@@ -144,7 +145,7 @@ fn build() {
     // Allow no styles/style.css
     match std::fs::copy(&style_path, format!("{}/{}", pub_dir, style_path)) {
         Ok(_) => (),
-        Err(_) => println!("Failed to copy style file")
+        Err(_) => println!("No style.css found at {}", style_path)
     }
 
     let posts = match posts_cfg.posts {
@@ -174,16 +175,17 @@ fn build() {
         index_stream.push(link_block);
 
     }
-    match html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg) {
-        Ok(_) => (),
-        Err(_) => println!("Failed to parse stream into HTML.")
+    if let Err(e) = html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg) {
+        return Err(e);
     };
     let duration = start_time.elapsed();
     println!("Done.");
     println!("Site generation took {:?}", duration);
+
+    Ok(())
 }
 
-fn add(title: &str, path: &str) {
+fn add(title: &str, path: &str) -> Result<(), std::io::Error> {
     print!("Adding new post.. ");
     let file = std::fs::OpenOptions::new()
         .write(true)
@@ -195,20 +197,18 @@ fn add(title: &str, path: &str) {
         Err(_) => panic!("Failed to open posts.toml")
     };
 
-    writeln!(file, "\n[[posts]]");
-    writeln!(file, "{}", format!("title = \"{}\"", title));
-    writeln!(file, "{}", format!("url = \"posts/{}.md\"", path));
+    writeln!(file, "\n[[posts]]")?;
+    writeln!(file, "{}", format!("title = \"{}\"", title))?;
+    writeln!(file, "{}", format!("url = \"posts/{}.md\"", path))?;
 
     // TODO: If the file exists, maybe don't delete?
     // TODO: Or perhaps a separate command for the above
-    let f_post = fs::File::create(format!("./posts/{}.md", path));
-    match f_post {
-        Ok(_) => (),
-        Err(_) => panic!("Failed to create post file! {}", path)
-    };
+    fs::File::create(format!("./posts/{}.md", path))?;
 
     println!("Done.");
     println!("Created new post \"{}\"", title);
+
+    Ok(())
 }
 
 fn main() {
@@ -263,10 +263,8 @@ fn main() {
         },
         ("clean", Some(_)) => { clean(); },
         ("add", Some(sc_m)) => {
-            match (sc_m.value_of("TITLE"), sc_m.value_of("FILE")) {
-                (None, _) => println!("Missing argument"),
-                (_, None) => println!("Missing argument"),
-                (Some(t), Some(f)) => add(t, f)
+            if let (Some(t), Some(f)) = (sc_m.value_of("TITLE"), sc_m.value_of("FILE")) {
+                add(t, f);
             }
         }
         _ => println!("No subcommand specified. Please specify a subcommand")
