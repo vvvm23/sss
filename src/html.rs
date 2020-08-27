@@ -5,6 +5,8 @@
 /// This library will handle all the markdown features that I defined in 
 /// md.rs.
 ///
+/// This is still a WIP. panic(s) should be replaced with proper logging
+///
 use crate::cfg::{HeaderLink, SiteConfig};
 use crate::md::{MDComponent, PGComponent};
 use std::fs::File;
@@ -31,11 +33,11 @@ fn generate_header_links(links: &Vec<HeaderLink>) -> String {
     for l in links {
         let name = match &l.name {
             Some(n) => n,
-            None => panic!()
+            None =>  panic!("HeaderLink had missing name."),
         };
         let url = match &l.url {
             Some(u) => u,
-            None => panic!()
+            None => panic!("HeaderLink had missing URL.")
         };
 
         header.push_str(&format!("<a href=\"{}\">{}</a>", url, name));
