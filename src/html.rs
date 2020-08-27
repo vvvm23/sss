@@ -1,3 +1,10 @@
+/// This file handles the conversion from the markdown "stream", created by
+/// the md library file, to a minimal HTML file which will be placed in the
+/// public directory.
+///
+/// This library will handle all the markdown features that I defined in 
+/// md.rs.
+///
 use crate::cfg::{HeaderLink, SiteConfig};
 use crate::md::{MDComponent, PGComponent};
 use std::fs::File;
@@ -6,6 +13,7 @@ use std::io::{BufWriter, Write};
 /// Generate HTML <head> block
 pub fn generate_head(title: &String, style_path: &String) -> String {
     // TODO: Optional highlight.js
+    // TODO: If highlight.js is wanted, should obtain a local copy so it can work offline.
     format!("<head>\
         <title>{}</title>\
         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\
@@ -65,8 +73,6 @@ pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
 }
 
 /// Takes a stream (Vec<MDComponent>) and a title and writes to public/index.html
-// TODO: parse title from file? MDComponent::Title 
-// TODO: define output file based on input file (maintain directory structure)
 pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteConfig) -> std::io::Result<()> {
     let title = &site_cfg.title;
     let style_path = &site_cfg.style_path;
@@ -103,4 +109,3 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
 
     Ok(())
 }
-
