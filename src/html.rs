@@ -68,23 +68,10 @@ pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
 // TODO: parse title from file? MDComponent::Title 
 // TODO: define output file based on input file (maintain directory structure)
 pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteConfig) -> std::io::Result<()> {
-    // TODO: panicking is dumb, don't do that
-    let title = match &site_cfg.title {
-        Some(t) => t,
-        None => panic!(),
-    };
-    let style_path = match &site_cfg.style_path {
-        Some(p) => p,
-        None => panic!(),
-    };
-    let header_links = match &site_cfg.header_links {
-        Some(ls) => ls,
-        None => panic!()
-    };
-    let pub_dir = match &site_cfg.pub_dir {
-        Some(p) => p,
-        None => panic!()
-    };
+    let title = &site_cfg.title;
+    let style_path = &site_cfg.style_path;
+    let header_links = &site_cfg.header_links;
+    let pub_dir = &site_cfg.pub_dir;
 
     let f = File::create(format!("{}/{}", pub_dir, path)).expect("Unable to create file");
     let mut f = BufWriter::new(f);

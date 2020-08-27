@@ -5,7 +5,7 @@ mod html;
 mod cfg;
 mod md;
 
-use crate::cfg::{HeaderLink, SiteConfig};
+use crate::cfg::{HeaderLink, SiteConfig, SiteConfigToml};
 use clap::{Arg, App};
 use toml;
 
@@ -82,10 +82,10 @@ fn new(project_name: String) {
 fn clean() {
     print!("Cleaning public directory.. ");
     let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
-    let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
-    let toml_cfg = toml_cfg.fill_empty();
+    let toml_cfg: cfg::SiteConfigToml = toml::from_str(&toml_string).unwrap();
+    let toml_cfg = toml_cfg.build_cfg();
 
-    let pub_dir = &toml_cfg.pub_dir.unwrap();
+    let pub_dir = &toml_cfg.pub_dir;
 
     let files = fs::read_dir(pub_dir);
     if let Err(_) = files {
@@ -127,36 +127,17 @@ fn build() {
     print!("Building site into public directory.. ");
 
     let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
-    let toml_cfg: cfg::SiteConfig = toml::from_str(&toml_string).unwrap();
-    let toml_cfg = toml_cfg.fill_empty();
+    let toml_cfg: cfg::SiteConfigToml = toml::from_str(&toml_string).unwrap();
+    let toml_cfg = toml_cfg.build_cfg();
 
     let posts_string: String = fs::read_to_string("posts.toml").expect("Failed to open posts.toml");
     let posts_cfg: cfg::PostConfig = toml::from_str(&posts_string).unwrap();
 
-    let index_path = match &toml_cfg.index_path {
-        Some(p) => p,
-        None => panic!("Missing index path!")
-    };
-
-    let posts_dir = match &toml_cfg.page_dir {
-        Some(p) => p,
-        None => panic!("Missing posts directory path!")
-    };
-
-    let style_path = match &toml_cfg.style_path {
-        Some(p) => p,
-        None => panic!("Missing style path!"),
-    };
-
-    let pub_dir = match &toml_cfg.pub_dir {
-        Some(p) => p,
-        None => panic!("Missing public directory path!")
-    };
-
-    let font_dir = match &toml_cfg.fonts_dir {
-        Some(p) => p,
-        None => panic!("Missing fonts directory path!")
-    };
+    let index_path = &toml_cfg.index_path;
+    let posts_dir = &toml_cfg.page_dir;
+    let style_path = &toml_cfg.style_path;
+    let pub_dir = &toml_cfg.pub_dir;
+    let font_dir = &toml_cfg.fonts_dir;
 
     let font_files = std::fs::read_dir(font_dir);
     for f in font_files.unwrap() {
@@ -178,7 +159,6 @@ fn build() {
         Err(_) => println!("Failed to copy style file")
     }
 
-
     let posts = match posts_cfg.posts {
         Some(p) => p,
         None => vec![]
@@ -186,7 +166,6 @@ fn build() {
 
     let posts: Vec<cfg::Post> = posts.into_iter().rev().collect();
 
-    //convert_file(index_path, &"index.html".to_string(), &toml_cfg);
     let index_stream = md::parse_md_file(&index_path);
     let mut index_stream = match index_stream {
         Ok(s) => s,
@@ -196,13 +175,6 @@ fn build() {
     index_stream.push(md::MDComponent::Heading(3, "Recent Posts".to_string()));
 
     let paths = fs::read_dir(posts_dir).unwrap();
-    //for p in paths {
-        //let p = format!("{}", p.unwrap().path().display());
-        //let mut target_name: String = p.chars().take_while(|x| *x != '.').collect();
-        //target_name.push_str(".html");
-        //let tp = target_name;
-        //convert_file(&p, &tp, &toml_cfg);
-    //}
     
     for p in posts {
         let url = p.url.unwrap();
