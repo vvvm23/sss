@@ -1,3 +1,4 @@
+// TODO: Clean up remaining panic!(s) and replace with recoverable code.
 #[macro_use]
 extern crate serde_derive;
 
@@ -24,11 +25,6 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
         Err(_) => panic!("Failed to parse stream into HTML.")
     };
 }
-
-// TODO: Is this function even necessary now?
-//fn p_create_dir(path: String) -> Result<(), std::io::Error> {
-    //fs::create_dir(&path)
-//}
 
 fn new(project_name: String) -> Result<(), std::io::Error> {
     print!("Creating new project.. ");
@@ -125,8 +121,7 @@ fn build() -> Result<(), std::io::Error>
     let font_files = std::fs::read_dir(font_dir);
     for f in font_files.unwrap() {
         let f = f.unwrap().path();
-        let f = f.to_str();
-        let f = match f {
+        let f = match f.to_str() {
             Some(s) => s,
             None => panic!()
         };
@@ -142,6 +137,7 @@ fn build() -> Result<(), std::io::Error>
         Err(_) => println!("No style.css found at {}", style_path)
     }
 
+    // Allow no posts
     let posts = match posts_cfg.posts {
         Some(p) => p,
         None => vec![]
@@ -169,9 +165,10 @@ fn build() -> Result<(), std::io::Error>
         index_stream.push(link_block);
 
     }
-    if let Err(e) = html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg) {
-        return Err(e);
-    };
+    html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg)?;
+    //if let Err(e) = html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg) {
+        //return Err(e);
+    //};
     let duration = start_time.elapsed();
     println!("Done.");
     println!("Site generation took {:?}", duration);
@@ -181,15 +178,15 @@ fn build() -> Result<(), std::io::Error>
 
 fn add(title: &str, path: &str) -> Result<(), std::io::Error> {
     print!("Adding new post.. ");
-    let file = std::fs::OpenOptions::new()
+    let mut file = std::fs::OpenOptions::new()
         .write(true)
         .append(true)
-        .open("posts.toml");
+        .open("posts.toml")?;
 
-    let mut file = match file {
-        Ok(f) => f,
-        Err(_) => panic!("Failed to open posts.toml")
-    };
+    //let mut file = match file {
+        //Ok(f) => f,
+        //Err(_) => panic!("Failed to open posts.toml")
+    //};
 
     writeln!(file, "\n[[posts]]")?;
     writeln!(file, "{}", format!("title = \"{}\"", title))?;
