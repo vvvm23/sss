@@ -25,46 +25,40 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
     };
 }
 
-fn p_create_dir(path: String) {
-    match fs::create_dir(&path) {
-        Ok(_) => (),
-        Err(_) => panic!("Failed to create directory. {}", &path),
-    };
+// TODO: Is this function even necessary now?
+fn p_create_dir(path: String) -> Result<(), std::io::Error> {
+    fs::create_dir(&path)
 }
 
-fn new(project_name: String) {
+fn new(project_name: String) -> Result<(), std::io::Error> {
     print!("Creating new project.. ");
 
     if let Err(_) = fs::create_dir(format!("./{}", project_name)) {
         println!("\nProject Directory already exists! Cancelling..\n");
-        return
+        return Ok(())
     }
 
-    let f_cfg = fs::File::create(format!("./{}/{}", project_name, "sss-config.toml"));
-    if let Err(_) = f_cfg { panic!("Failed to create sss-config.toml") };
+    fs::File::create(format!("./{}/{}", project_name, "sss-config.toml"))?;
+    fs::File::create(format!("./{}/{}", project_name, "posts.toml"))?;
 
-    let p_cfg = fs::File::create(format!("./{}/{}", project_name, "posts.toml"));
-    if let Err(_) = p_cfg { panic!("Failed to create posts.toml") };
+    p_create_dir(format!("./{}/{}", project_name, "posts"))?;
+        fs::File::create(format!("./{}/{}", project_name, "posts/index.md"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "posts"));
-        let f_index = fs::File::create(format!("./{}/{}", project_name, "posts/index.md"));
-        if let Err(_) = f_index { panic!("Failed to create index.md") };
+    p_create_dir(format!("./{}/{}", project_name, "imgs"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "imgs"));
+    p_create_dir(format!("./{}/{}", project_name, "styles"))?;
+        fs::File::create(format!("./{}/{}", project_name, "styles/style.css"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "styles"));
-        let f_styles = fs::File::create(format!("./{}/{}", project_name, "styles/style.css"));
-        if let Err(_) = f_styles { panic!("Failed to create style.css") };
+    p_create_dir(format!("./{}/{}", project_name, "fonts"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "fonts"));
-
-    p_create_dir(format!("./{}/{}", project_name, "public"));
-        p_create_dir(format!("./{}/{}", project_name, "public/posts"));
-        p_create_dir(format!("./{}/{}", project_name, "public/fonts"));
-        p_create_dir(format!("./{}/{}", project_name, "public/imgs"));
-        p_create_dir(format!("./{}/{}", project_name, "public/styles"));
+    p_create_dir(format!("./{}/{}", project_name, "public"))?;
+        p_create_dir(format!("./{}/{}", project_name, "public/posts"))?;
+        p_create_dir(format!("./{}/{}", project_name, "public/fonts"))?;
+        p_create_dir(format!("./{}/{}", project_name, "public/imgs"))?;
+        p_create_dir(format!("./{}/{}", project_name, "public/styles"))?;
 
     println!("Done.\n");
+    Ok(())
 }
 
 fn clean() -> Result<(), std::io::Error> {
@@ -250,10 +244,20 @@ fn main() {
 
     match matches.subcommand() {
         ("new", Some(sc_m)) => {
-            match sc_m.value_of("DIRECTORY") {
-                Some(d) => new(d.to_string()),
-                None => println!("No project name specified"),
-            };
+            if let Some(d) = sc_m.value_of("DIRECTORY") {
+                let r = new(d.to_string());
+                if let Err(e) = r {
+                    println!("\nAn error occurred whilst performing operation 'add'.");
+                    println!("Check you have permission to create new directories and files in this location.");
+                    println!("Also check the project name is valid.\n");
+                    println!("The error was: ");
+                    println!("{}\n", e);
+                    println!("Project may be in inconsistent state. Please check for a new directory with the project name and delete it.");
+                    return;
+                }
+            } else {
+                println!("No project name specified.");
+            }
         },
         ("build", Some(sc_m)) => {
             if sc_m.is_present("clean") {
