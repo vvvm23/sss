@@ -69,7 +69,7 @@ fn new(project_name: String) {
 
 fn clean() -> Result<(), std::io::Error> {
     print!("Cleaning public directory.. ");
-    let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
+    let toml_string: String = fs::read_to_string("sss-config.toml")?;
     let toml_cfg: cfg::SiteConfigToml = toml::from_str(&toml_string).unwrap();
     let toml_cfg = toml_cfg.build_cfg();
 
@@ -116,7 +116,7 @@ fn build() -> Result<(), std::io::Error>
 {
     print!("Building site into public directory.. ");
 
-    let toml_string: String = fs::read_to_string("sss-config.toml").expect("Failed to open sss-config.toml");
+    let toml_string: String = fs::read_to_string("sss-config.toml")?;
     let toml_cfg: cfg::SiteConfigToml = toml::from_str(&toml_string).unwrap();
     let toml_cfg = toml_cfg.build_cfg();
 
@@ -257,14 +257,48 @@ fn main() {
         },
         ("build", Some(sc_m)) => {
             if sc_m.is_present("clean") {
-                clean();
+                let r = clean();
+                if let Err(e) = r {
+                    println!("\nAn error occurred whilst performing operation 'clean'.");
+                    println!("Check you are in the root of sss project directory and that the directory structure is valid.\n");
+                    println!("The error was: ");
+                    println!("{}\n", e);
+                    println!("Project may be in inconsistent state. Please clean build after errors are resolved.");
+                    return;
+                }
             }
-            build();
+            let r = build();
+            if let Err(e) = r {
+                println!("\nAn error occurred whilst performing operation 'build'");
+                println!("Check you are in the root of the sss project directory and the directory structure is valid.");
+                println!("Also check the source markdown files are well formed. Proper syntax errors may be highlighted in the future.\n");
+                println!("The error was: ");
+                println!("{}\n", e);
+                println!("Project may be in inconsistent state. Please clean build after errors are resolved.");
+            }
         },
-        ("clean", Some(_)) => { clean(); },
+        ("clean", Some(_)) => { 
+            let r = clean();
+            if let Err(e) = r {
+                println!("\nAn error occurred whilst performing operation 'clean'.");
+                println!("Check you are in the root of sss project directory and that the directory structure is valid.\n");
+                println!("The error was: ");
+                println!("{}\n", e);
+                println!("Project may be in inconsistent state. Please clean build after errors are resolved.");
+            }
+        },
         ("add", Some(sc_m)) => {
             if let (Some(t), Some(f)) = (sc_m.value_of("TITLE"), sc_m.value_of("FILE")) {
-                add(t, f);
+                let r = add(t, f);
+                if let Err(e) = r {
+                    println!("\nAn error occurred whilst performing operation 'add'");
+                    println!("Check you are in the root of sss project directory and that the directory structure is valid.");
+                    println!("Also check that the name and path to the post is valid.\n");
+                    println!("The error was: ");
+                    println!("{}\n", e);
+                    println!("Project may be in inconsistent state. Please clean build after errors are resolved.") }
+            } else {
+                println!("Missing Arguments!");
             }
         }
         _ => println!("No subcommand specified. Please specify a subcommand")
