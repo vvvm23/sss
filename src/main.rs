@@ -26,9 +26,9 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
 }
 
 // TODO: Is this function even necessary now?
-fn p_create_dir(path: String) -> Result<(), std::io::Error> {
-    fs::create_dir(&path)
-}
+//fn p_create_dir(path: String) -> Result<(), std::io::Error> {
+    //fs::create_dir(&path)
+//}
 
 fn new(project_name: String) -> Result<(), std::io::Error> {
     print!("Creating new project.. ");
@@ -41,21 +41,21 @@ fn new(project_name: String) -> Result<(), std::io::Error> {
     fs::File::create(format!("./{}/{}", project_name, "sss-config.toml"))?;
     fs::File::create(format!("./{}/{}", project_name, "posts.toml"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "posts"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "posts"))?;
         fs::File::create(format!("./{}/{}", project_name, "posts/index.md"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "imgs"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "imgs"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "styles"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "styles"))?;
         fs::File::create(format!("./{}/{}", project_name, "styles/style.css"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "fonts"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "fonts"))?;
 
-    p_create_dir(format!("./{}/{}", project_name, "public"))?;
-        p_create_dir(format!("./{}/{}", project_name, "public/posts"))?;
-        p_create_dir(format!("./{}/{}", project_name, "public/fonts"))?;
-        p_create_dir(format!("./{}/{}", project_name, "public/imgs"))?;
-        p_create_dir(format!("./{}/{}", project_name, "public/styles"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "public"))?;
+        fs::create_dir(format!("./{}/{}", project_name, "public/posts"))?;
+        fs::create_dir(format!("./{}/{}", project_name, "public/fonts"))?;
+        fs::create_dir(format!("./{}/{}", project_name, "public/imgs"))?;
+        fs::create_dir(format!("./{}/{}", project_name, "public/styles"))?;
 
     println!("Done.\n");
     Ok(())
