@@ -183,11 +183,6 @@ fn add(title: &str, path: &str) -> Result<(), std::io::Error> {
         .append(true)
         .open("posts.toml")?;
 
-    //let mut file = match file {
-        //Ok(f) => f,
-        //Err(_) => panic!("Failed to open posts.toml")
-    //};
-
     writeln!(file, "\n[[posts]]")?;
     writeln!(file, "{}", format!("title = \"{}\"", title))?;
     writeln!(file, "{}", format!("url = \"posts/{}.md\"", path))?;
