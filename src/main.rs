@@ -2,12 +2,12 @@
 #[macro_use]
 extern crate serde_derive;
 
-mod html;
 mod cfg;
+mod html;
 mod md;
 
 use crate::cfg::SiteConfig;
-use clap::{Arg, App};
+use clap::{App, Arg};
 use toml;
 
 use std::fs;
@@ -17,12 +17,12 @@ fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfi
     let stream = md::parse_md_file(&source_name);
     let stream = match stream {
         Ok(s) => s,
-        _ => panic!("Failed to obtain stream")
+        _ => panic!("Failed to obtain stream"),
     };
 
     match html::stream_to_html(stream, &target_name, &site_cfg) {
         Ok(_) => (),
-        Err(_) => panic!("Failed to parse stream into HTML.")
+        Err(_) => panic!("Failed to parse stream into HTML."),
     };
 }
 
@@ -31,27 +31,27 @@ fn new(project_name: String) -> Result<(), std::io::Error> {
 
     if let Err(_) = fs::create_dir(format!("./{}", project_name)) {
         println!("\nProject Directory already exists! Cancelling..\n");
-        return Ok(())
+        return Ok(());
     }
 
     fs::File::create(format!("./{}/{}", project_name, "sss-config.toml"))?;
     fs::File::create(format!("./{}/{}", project_name, "posts.toml"))?;
 
     fs::create_dir(format!("./{}/{}", project_name, "posts"))?;
-        fs::File::create(format!("./{}/{}", project_name, "posts/index.md"))?;
+    fs::File::create(format!("./{}/{}", project_name, "posts/index.md"))?;
 
     fs::create_dir(format!("./{}/{}", project_name, "imgs"))?;
 
     fs::create_dir(format!("./{}/{}", project_name, "styles"))?;
-        fs::File::create(format!("./{}/{}", project_name, "styles/style.css"))?;
+    fs::File::create(format!("./{}/{}", project_name, "styles/style.css"))?;
 
     fs::create_dir(format!("./{}/{}", project_name, "fonts"))?;
 
     fs::create_dir(format!("./{}/{}", project_name, "public"))?;
-        fs::create_dir(format!("./{}/{}", project_name, "public/posts"))?;
-        fs::create_dir(format!("./{}/{}", project_name, "public/fonts"))?;
-        fs::create_dir(format!("./{}/{}", project_name, "public/imgs"))?;
-        fs::create_dir(format!("./{}/{}", project_name, "public/styles"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "public/posts"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "public/fonts"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "public/imgs"))?;
+    fs::create_dir(format!("./{}/{}", project_name, "public/styles"))?;
 
     println!("Done.\n");
     Ok(())
@@ -101,9 +101,7 @@ fn clean() -> Result<(), std::io::Error> {
     Ok(())
 }
 
-
-fn build() -> Result<(), std::io::Error>
-{
+fn build() -> Result<(), std::io::Error> {
     print!("Building site into public directory.. ");
 
     let toml_string: String = fs::read_to_string("sss-config.toml")?;
@@ -123,7 +121,7 @@ fn build() -> Result<(), std::io::Error>
         let f = f.unwrap().path();
         let f = match f.to_str() {
             Some(s) => s,
-            None => panic!()
+            None => panic!(),
         };
 
         fs::copy(f, format!("{}/{}", pub_dir, f))?;
@@ -134,13 +132,13 @@ fn build() -> Result<(), std::io::Error>
     // Allow no styles/style.css
     match std::fs::copy(&style_path, format!("{}/{}", pub_dir, style_path)) {
         Ok(_) => (),
-        Err(_) => println!("No style.css found at {}", style_path)
+        Err(_) => println!("No style.css found at {}", style_path),
     }
 
     // Allow no posts
     let posts = match posts_cfg.posts {
         Some(p) => p,
-        None => vec![]
+        None => vec![],
     };
 
     let posts: Vec<cfg::Post> = posts.into_iter().rev().collect();
@@ -148,7 +146,7 @@ fn build() -> Result<(), std::io::Error>
     let index_stream = md::parse_md_file(&index_path);
     let mut index_stream = match index_stream {
         Ok(s) => s,
-        _ => panic!("Failed to obtain stream")
+        _ => panic!("Failed to obtain stream"),
     };
 
     index_stream.push(md::MDComponent::Heading(3, "Recent Posts".to_string()));
@@ -163,11 +161,10 @@ fn build() -> Result<(), std::io::Error>
 
         let link_block = md::MDComponent::Paragraph(vec![md::PGComponent::Hyperlink(title, tp)]);
         index_stream.push(link_block);
-
     }
     html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg)?;
     //if let Err(e) = html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg) {
-        //return Err(e);
+    //return Err(e);
     //};
     let duration = start_time.elapsed();
     println!("Done.");
@@ -203,35 +200,44 @@ fn main() {
         .version("0.1-alpha")
         .author("Alexander McKinney <alexander.f.mckinney@durham.ac.uk>")
         .about("Generates a website from a collection of markdown files")
-        .subcommand(App::new("build")
-            .about("Commands to generate a website from markdown files")
-            .arg(Arg::with_name("clean")
-                .short("c")
-                .long("clean")
-                .help("Clean before building")
-                .takes_value(false)))
-
-        .subcommand(App::new("new")
-            .about("Commands to create a new project.")
-            .arg(Arg::with_name("DIRECTORY")
-                .help("Give the project directory name")
-                .required(true)
-                .index(1)))
-
-        .subcommand(App::new("clean")
-            .about("Clean public/ directory"))
-
-        .subcommand(App::new("add")
-            .about("Add a new post to the site")
-            .arg(Arg::with_name("TITLE")
-                 .help("Human-readable title of the post.")
-                 .required(true)
-                 .index(1))
-            .arg(Arg::with_name("FILE")
-                 .help("File name of the new post.")
-                 .required(true)
-                 .index(2)))
-
+        .subcommand(
+            App::new("build")
+                .about("Commands to generate a website from markdown files")
+                .arg(
+                    Arg::with_name("clean")
+                        .short("c")
+                        .long("clean")
+                        .help("Clean before building")
+                        .takes_value(false),
+                ),
+        )
+        .subcommand(
+            App::new("new")
+                .about("Commands to create a new project.")
+                .arg(
+                    Arg::with_name("DIRECTORY")
+                        .help("Give the project directory name")
+                        .required(true)
+                        .index(1),
+                ),
+        )
+        .subcommand(App::new("clean").about("Clean public/ directory"))
+        .subcommand(
+            App::new("add")
+                .about("Add a new post to the site")
+                .arg(
+                    Arg::with_name("TITLE")
+                        .help("Human-readable title of the post.")
+                        .required(true)
+                        .index(1),
+                )
+                .arg(
+                    Arg::with_name("FILE")
+                        .help("File name of the new post.")
+                        .required(true)
+                        .index(2),
+                ),
+        )
         .get_matches();
 
     match matches.subcommand() {
@@ -250,7 +256,7 @@ fn main() {
             } else {
                 println!("No project name specified.");
             }
-        },
+        }
         ("build", Some(sc_m)) => {
             if sc_m.is_present("clean") {
                 let r = clean();
@@ -272,8 +278,8 @@ fn main() {
                 println!("{}\n", e);
                 println!("Project may be in inconsistent state. Please clean build after errors are resolved.");
             }
-        },
-        ("clean", Some(_)) => { 
+        }
+        ("clean", Some(_)) => {
             let r = clean();
             if let Err(e) = r {
                 println!("\nAn error occurred whilst performing operation 'clean'.");
@@ -282,7 +288,7 @@ fn main() {
                 println!("{}\n", e);
                 println!("Project may be in inconsistent state. Please clean build after errors are resolved.");
             }
-        },
+        }
         ("add", Some(sc_m)) => {
             if let (Some(t), Some(f)) = (sc_m.value_of("TITLE"), sc_m.value_of("FILE")) {
                 let r = add(t, f);
@@ -292,12 +298,12 @@ fn main() {
                     println!("Also check that the name and path to the post is valid.\n");
                     println!("The error was: ");
                     println!("{}\n", e);
-                    println!("Project may be in inconsistent state. Please clean build after errors are resolved.") }
+                    println!("Project may be in inconsistent state. Please clean build after errors are resolved.")
+                }
             } else {
                 println!("Missing Arguments!");
             }
         }
-        _ => println!("No subcommand specified. Please specify a subcommand")
+        _ => println!("No subcommand specified. Please specify a subcommand"),
     };
-
 }

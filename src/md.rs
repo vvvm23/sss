@@ -1,3 +1,5 @@
+use std::fs::File;
+use std::io::prelude::*;
 /// This file handles the conversion from md to a vector of enums that describes
 /// the various components of a markdown file. This will not be a comprehensive
 /// representation of a markdown file, but will be sufficient for my use case.
@@ -10,17 +12,15 @@
 ///     - Code blocks, (indented code blocks)
 ///
 use std::io::BufReader;
-use std::fs::File;
-use std::io::prelude::*;
 
 /// Enum containing all supported paragraph markdown components
 #[derive(Debug)]
 pub enum PGComponent {
-    Text(String), // Default type
-    Bold(String), // ** **
-    Italics(String), // * *
+    Text(String),              // Default type
+    Bold(String),              // ** **
+    Italics(String),           // * *
     Hyperlink(String, String), // (text, url)
-    Code(String), // Inline code
+    Code(String),              // Inline code
 }
 
 /// Enum containing all supported markdown components
@@ -65,19 +65,21 @@ fn parse_paragraph(text: &String) -> MDComponent {
     let text_chars = chars.by_ref();
 
     // TODO: Check for unclosed tags and other such error handling
-    loop { 
+    loop {
         let c = &text_chars.next();
 
         match c {
-            Some('*') => { // Some form of emphasis
+            Some('*') => {
+                // Some form of emphasis
                 if current_block.len() > 0 {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
                 }
 
                 match text_chars.next() {
-                    Some('*') => { // Bold
-                        let bold: String = text_chars.take_while(|x| *x != '*').collect(); 
+                    Some('*') => {
+                        // Bold
+                        let bold: String = text_chars.take_while(|x| *x != '*').collect();
                         let closing = text_chars.next();
 
                         match closing {
@@ -86,27 +88,39 @@ fn parse_paragraph(text: &String) -> MDComponent {
                         };
 
                         pg_vec.push(PGComponent::Bold(bold.to_string()));
-                    },
-                    Some(c) => { // Italics
-                        let italics: String = format!("{}{}", c, text_chars.take_while(|x| *x != '*').collect::<String>()); // bit wack
+                    }
+                    Some(c) => {
+                        // Italics
+                        let italics: String = format!(
+                            "{}{}",
+                            c,
+                            text_chars.take_while(|x| *x != '*').collect::<String>()
+                        ); // bit wack
                         pg_vec.push(PGComponent::Italics(italics));
-                    },
-                    None => { // Something went wrong
+                    }
+                    None => {
+                        // Something went wrong
                         panic!("Expected paragraph stream to continue. It did not..");
-                    },
+                    }
                 };
-            },
-            Some('[') => { // Inline link
+            }
+            Some('[') => {
+                // Inline link
                 if current_block.len() > 0 {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
                 }
 
                 let text: String = text_chars.take_while(|x| *x != ']').collect();
-                let url: String = text_chars.skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
+                let url: String = text_chars
+                    .skip_while(|x| *x != '(')
+                    .skip(1)
+                    .take_while(|x| *x != ')')
+                    .collect();
                 pg_vec.push(PGComponent::Hyperlink(text, url));
-            },
-            Some('`') => { // Inline code
+            }
+            Some('`') => {
+                // Inline code
                 if current_block.len() > 0 {
                     pg_vec.push(PGComponent::Text(current_block));
                     current_block = "".to_string();
@@ -114,11 +128,13 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
                 let code: String = text_chars.take_while(|x| *x != '`').collect();
                 pg_vec.push(PGComponent::Code(code));
-            },
-            Some(ch) => { // Any other character
+            }
+            Some(ch) => {
+                // Any other character
                 current_block.push(*ch);
-            },
-            None => { // Reached end of iterator
+            }
+            None => {
+                // Reached end of iterator
                 break;
             }
         }
@@ -143,17 +159,18 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
     let f = BufReader::new(f);
 
     let mut md_vec: Vec<MDComponent> = Vec::new(); // Initialise stream to empty vec
-    let mut block: String = "".to_string(); // Initialise current block to empty 
+    let mut block: String = "".to_string(); // Initialise current block to empty
     let mut current_block: Option<Block> = None; // Set current block to None
 
     for (_, l) in f.lines().enumerate() {
-        let line = l.unwrap().to_string(); 
+        let line = l.unwrap().to_string();
         let mut line_chars = line.chars();
-        
+
         let c = line_chars.next();
 
         let md_c = match c {
-            Some('#') => { // Found a heading
+            Some('#') => {
+                // Found a heading
                 let md_cc = match current_block {
                     Some(Block::Paragraph) => Some(parse_paragraph(&block)),
                     Some(Block::Code) => Some(parse_code(&block)),
@@ -168,8 +185,9 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 }
 
                 Some(parse_heading(&mut line_chars))
-            },
-            Some('>') => { // Found a block quote
+            }
+            Some('>') => {
+                // Found a block quote
                 let md_cc = match current_block {
                     Some(Block::Paragraph) => Some(parse_paragraph(&block)),
                     Some(Block::Code) => Some(parse_code(&block)),
@@ -187,7 +205,8 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 block.push_str(" ");
                 None
             }
-            Some(' ') => { // Potentially found a code block
+            Some(' ') => {
+                // Potentially found a code block
                 if line_chars.take(3).collect::<String>() == "   " {
                     let md_cc = match current_block {
                         Some(Block::Code) => None,
@@ -204,8 +223,7 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                     current_block = Some(Block::Code);
                     block.push_str(&line.chars().skip(4).collect::<String>());
                     block.push_str("\n");
-
-                } else { 
+                } else {
                     let md_cc = match current_block {
                         Some(Block::Code) => Some(parse_code(&block)),
                         Some(Block::Quote) => Some(parse_quote(&block)),
@@ -223,10 +241,20 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                     block.push_str(" ");
                 }
                 None
-            },
-            Some('!') => { // Found an image
-                let alt_text: String = line_chars.skip_while(|x| *x != '[').skip(1).take_while(|x| *x != ']').collect();
-                let url: String = line.chars().skip_while(|x| *x != '(').skip(1).take_while(|x| *x != ')').collect();
+            }
+            Some('!') => {
+                // Found an image
+                let alt_text: String = line_chars
+                    .skip_while(|x| *x != '[')
+                    .skip(1)
+                    .take_while(|x| *x != ']')
+                    .collect();
+                let url: String = line
+                    .chars()
+                    .skip_while(|x| *x != '(')
+                    .skip(1)
+                    .take_while(|x| *x != ')')
+                    .collect();
                 Some(MDComponent::Image(alt_text, url))
             }
             None => {
@@ -245,8 +273,9 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 current_block = None;
 
                 None
-            },
-            _ => { // Found something else, interpret as paragraph
+            }
+            _ => {
+                // Found something else, interpret as paragraph
                 block.push_str(&line);
                 block.push_str(" ");
                 current_block = Some(Block::Paragraph);
@@ -256,9 +285,8 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
 
         if let Some(c) = md_c {
             md_vec.push(c);
-            block = "".to_string(); 
+            block = "".to_string();
         }
-
     }
 
     // Add final block

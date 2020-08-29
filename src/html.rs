@@ -2,7 +2,7 @@
 /// the md library file, to a minimal HTML file which will be placed in the
 /// public directory.
 ///
-/// This library will handle all the markdown features that I defined in 
+/// This library will handle all the markdown features that I defined in
 /// md.rs.
 ///
 /// This is still a WIP. panic(s) should be replaced with proper logging
@@ -27,17 +27,17 @@ pub fn generate_head(title: &String, style_path: &String) -> String {
     ", title, style_path)
 }
 
-/// Generate HTML links in header 
+/// Generate HTML links in header
 fn generate_header_links(links: &Vec<HeaderLink>) -> String {
     let mut header = "".to_string();
     for l in links {
         let name = match &l.name {
             Some(n) => n,
-            None =>  panic!("HeaderLink had missing name."),
+            None => panic!("HeaderLink had missing name."),
         };
         let url = match &l.url {
             Some(u) => u,
-            None => panic!("HeaderLink had missing URL.")
+            None => panic!("HeaderLink had missing URL."),
         };
 
         header.push_str(&format!("<a href=\"{}\">{}</a>", url, name));
@@ -48,11 +48,15 @@ fn generate_header_links(links: &Vec<HeaderLink>) -> String {
 
 /// Generate HTML for header in body
 pub fn generate_header(title: &String, links: &Vec<HeaderLink>) -> String {
-    format!("<div class=\"header\">\
+    format!(
+        "<div class=\"header\">\
         <a href=\"/\" class=\"sitetitle\">{}</span>\
         {}\
         </div>\
-    ", title, generate_header_links(links))
+    ",
+        title,
+        generate_header_links(links)
+    )
 }
 
 /// Generate HTML from paragraph stream
@@ -68,14 +72,17 @@ pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
             PGComponent::Hyperlink(t, u) => format!("<a href=\"{}\">{}</a>", u, t),
         };
         para_str.push_str(&pg_str);
-        
     }
     para_str.push_str("</p>");
     para_str
 }
 
 /// Takes a stream (Vec<MDComponent>) and a title and writes to HTML file
-pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteConfig) -> std::io::Result<()> {
+pub fn stream_to_html(
+    stream: Vec<MDComponent>,
+    path: &String,
+    site_cfg: &SiteConfig,
+) -> std::io::Result<()> {
     let title = &site_cfg.title;
     let style_path = &site_cfg.style_path;
     let header_links = &site_cfg.header_links;
@@ -90,7 +97,7 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
 
     let header = generate_header(&title, header_links);
     f.write(header.as_bytes())?;
-    
+
     f.write("<hr>".as_bytes())?;
     f.write("<div class=\"content\">".as_bytes())?;
     for mdc in stream {
@@ -99,9 +106,20 @@ pub fn stream_to_html(stream: Vec<MDComponent>, path: &String, site_cfg: &SiteCo
             MDComponent::Paragraph(ps) => f.write(generate_paragraph(ps).as_bytes())?,
             MDComponent::Image(t, u) => {
                 std::fs::copy(format!(".{}", &u), format!("{}/{}", pub_dir, &u))?;
-                f.write(format!("<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>", u, t, t).as_bytes())?},
-            MDComponent::CodeBlock(t) => f.write(format!("<pre><code>{}</code></pre>", t).as_bytes())?,
-            MDComponent::Quote(t) => f.write(format!("<blockquote>{}</blockquote>", t).as_bytes())?,
+                f.write(
+                    format!(
+                        "<figure><img src=\"{}\" alt=\"{}\"><figcaption>{}</figcaption></figure>",
+                        u, t, t
+                    )
+                    .as_bytes(),
+                )?
+            }
+            MDComponent::CodeBlock(t) => {
+                f.write(format!("<pre><code>{}</code></pre>", t).as_bytes())?
+            }
+            MDComponent::Quote(t) => {
+                f.write(format!("<blockquote>{}</blockquote>", t).as_bytes())?
+            }
             //MDComponent::Empty => f.write("".as_bytes())?,
         };
     }
