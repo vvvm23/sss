@@ -90,6 +90,7 @@ pub fn stream_to_html(
 
     let f = File::create(format!("{}/{}", pub_dir, path)).expect("Unable to create file");
     let mut f = BufWriter::new(f);
+    f.write(" <!DOCTYPE html>".as_bytes())?;
     f.write("<html>".as_bytes())?;
     let head = generate_head(&title, &style_path);
     f.write(head.as_bytes())?;
