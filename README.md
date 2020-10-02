@@ -45,7 +45,7 @@ List of the supported syntax so far:
 - Images in exclamation point form
 - Inline bold, italics, code and hyperlinks
 - Block Quotes (no inner md support yet though)
-- Inject HTML by simply writing it normally (a "feature" I guess)
+- ~Inject HTML by simply writing it normally (a "feature" I guess)~ This is apparently correct behaviour
 
 ## Configuration 
 
