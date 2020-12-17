@@ -154,12 +154,13 @@ fn build() -> Result<(), std::io::Error> {
     for p in posts {
         let url = p.url.unwrap();
         let title = p.title.unwrap();
+        let date = p.date.unwrap();
 
         let mut tp: String = url.chars().take_while(|x| *x != '.').collect();
         tp.push_str(".html");
         convert_file(&url, &tp, &toml_cfg);
 
-        let link_block = md::MDComponent::Paragraph(vec![md::PGComponent::Hyperlink(title, tp)]);
+        let link_block = md::MDComponent::Paragraph(vec![md::PGComponent::Hyperlink(title, tp), md::PGComponent::Italics(format!(" - {}", date))]);
         index_stream.push(link_block);
     }
     html::stream_to_html(index_stream, &"index.html".to_string(), &toml_cfg)?;

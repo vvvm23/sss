@@ -1,7 +1,9 @@
 [[posts]]
 title = "Test Post 1"
 url = "/posts/01.md"
+date = "01/01/2020"
 
 [[posts]]
 title = "Test Post 2"
 url = "/posts/02.md"
+date = "02/01/2020"

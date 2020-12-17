@@ -78,6 +78,7 @@ impl SiteConfig {
 pub struct Post {
     pub title: Option<String>,
     pub url: Option<String>,
+    pub date: Option<String>,
 }
 
 #[derive(Debug, Serialize, Deserialize)]
