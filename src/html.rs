@@ -20,6 +20,8 @@ pub fn generate_head(title: &String, style_path: &String) -> String {
         <title>{}</title>\
         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\
         <link rel=\"stylesheet\" type=\"text/css\" href=\"/{}\">\
+<script src=\"https://polyfill.io/v3/polyfill.min.js?features=es6\"></script>\
+<script id=\"MathJax-script\" async src=\"https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js\"></script>\
         <link rel=\"stylesheet\" href=\"//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/default.min.css\">\
         <script src=\"//cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js\"></script>\
         <script>hljs.initHighlightingOnLoad();</script>\
