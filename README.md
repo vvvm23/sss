@@ -47,6 +47,11 @@ List of the supported syntax so far:
 - Block Quotes (no inner md support yet though)
 - ~Inject HTML by simply writing it normally (a "feature" I guess)~ This is apparently correct behaviour
 
+## Features
+
+- Syntax highlighting of code blocks using hightlight.js
+- Inline and Display Math mode using MathJax
+
 ## Configuration 
 
 ### sss-config.toml
