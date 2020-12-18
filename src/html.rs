@@ -123,6 +123,9 @@ pub fn stream_to_html(
             MDComponent::Quote(t) => {
                 f.write(format!("<blockquote>{}</blockquote>", t).as_bytes())?
             }
+            MDComponent::Math(t) => {
+                f.write(format!("$${}$$", t).as_bytes())?
+            }
             //MDComponent::Empty => f.write("".as_bytes())?,
         };
     }

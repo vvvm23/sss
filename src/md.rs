@@ -10,6 +10,7 @@ use std::io::prelude::*;
 ///     - Images
 ///     - Hyperlinks
 ///     - Code blocks, (indented code blocks)
+///     - Math Blocks (Inline and Display)
 ///
 use std::io::BufReader;
 
@@ -21,7 +22,7 @@ pub enum PGComponent {
     Italics(String),           // * *
     Hyperlink(String, String), // (text, url)
     Code(String),              // Inline code
-    //Math(String),              // Inline math 
+    Math(String),              // Inline math 
 }
 
 /// Enum containing all supported markdown components
@@ -31,7 +32,8 @@ pub enum MDComponent {
     Paragraph(Vec<PGComponent>),
     Image(String, String),
     CodeBlock(String),         // 
-    Quote(String),             // Display math block
+    Quote(String),             // 
+    Math(String),              // Display math 
 }
 
 /// Used for defining the current block for multi-line blocks
@@ -166,6 +168,10 @@ pub fn parse_quote(text: &String) -> MDComponent {
     MDComponent::Quote(text.to_string())
 }
 
+pub fn parse_math(text: &String) -> MDComponent {
+    MDComponent::Math(text.to_string())
+}
+
 /// Takes path to markdown file and returns Vec<MDComponent> representing the file
 pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
     let f = File::open(path)?;
@@ -216,6 +222,65 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                 current_block = Some(Block::Quote);
                 block.push_str(&line.chars().skip(2).collect::<String>());
                 block.push_str(" ");
+                None
+            }
+            Some('$') => {
+                // Potentially found a display math block
+                match line_chars.next() {
+                    Some('$') => {
+                        // Display Math
+                        let md_cc = match current_block {
+                            Some(Block::Code) => Some(parse_code(&block)),
+                            Some(Block::Quote) => Some(parse_quote(&block)),
+                            Some(Block::Paragraph) => Some(parse_paragraph(&block)),
+                            None => None,
+                        };
+
+                        if let Some(b) = md_cc {
+                            md_vec.push(b);
+                            block = "".to_string();
+                        }
+
+                        println!("{:?}", line_chars);
+                        let math_text: String = line_chars
+                            .take_while(|x| *x != '$')
+                            .collect();
+                        println!("{}",math_text);
+                        md_vec.push(parse_math(&math_text));
+                    }
+                    Some(c) => {
+                        let md_cc = match current_block {
+                            Some(Block::Code) => Some(parse_code(&block)),
+                            Some(Block::Quote) => Some(parse_quote(&block)),
+                            Some(Block::Paragraph) => None,
+                            None => None,
+                        };
+
+                        if let Some(b) = md_cc {
+                            md_vec.push(b);
+                            block = "".to_string();
+                        }
+
+                        current_block = Some(Block::Paragraph);
+                        block.push_str(&line);
+                        block.push(c);
+                    }
+                    None => {
+                        let md_cc = match current_block {
+                            Some(Block::Code) => Some(parse_code(&block)),
+                            Some(Block::Quote) => Some(parse_quote(&block)),
+                            Some(Block::Paragraph) => None,
+                            None => None,
+                        };
+
+                        if let Some(b) = md_cc {
+                            md_vec.push(b);
+                            block = "".to_string();
+                        }
+                        current_block = Some(Block::Paragraph);
+                        block.push('$');
+                    }
+                }
                 None
             }
             Some(' ') => {
