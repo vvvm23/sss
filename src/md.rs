@@ -22,7 +22,7 @@ pub enum PGComponent {
     Italics(String),           // * *
     Hyperlink(String, String), // (text, url)
     Code(String),              // Inline code
-    Math(String),              // Inline math 
+    //Math(String),              // Inline math 
 }
 
 /// Enum containing all supported markdown components
@@ -241,11 +241,9 @@ pub fn parse_md_file(path: &str) -> std::io::Result<Vec<MDComponent>> {
                             block = "".to_string();
                         }
 
-                        println!("{:?}", line_chars);
                         let math_text: String = line_chars
                             .take_while(|x| *x != '$')
                             .collect();
-                        println!("{}",math_text);
                         md_vec.push(parse_math(&math_text));
                     }
                     Some(c) => {
