@@ -21,6 +21,7 @@ pub enum PGComponent {
     Italics(String),           // * *
     Hyperlink(String, String), // (text, url)
     Code(String),              // Inline code
+    //Math(String),              // Inline math 
 }
 
 /// Enum containing all supported markdown components
@@ -29,8 +30,8 @@ pub enum MDComponent {
     Heading(u8, String),
     Paragraph(Vec<PGComponent>),
     Image(String, String),
-    CodeBlock(String),
-    Quote(String),
+    CodeBlock(String),         // 
+    Quote(String),             // Display math block
 }
 
 /// Used for defining the current block for multi-line blocks
@@ -128,6 +129,18 @@ fn parse_paragraph(text: &String) -> MDComponent {
 
                 let code: String = text_chars.take_while(|x| *x != '`').collect();
                 pg_vec.push(PGComponent::Code(code));
+            }
+            Some('\\') => {
+                // Escape character
+                current_block.push('\\');
+                match text_chars.next() {
+                    Some(c) => {
+                        current_block.push(c);
+                    }
+                    None => {
+                        break; // TODO: Catch this case
+                    }
+                }
             }
             Some(ch) => {
                 // Any other character
