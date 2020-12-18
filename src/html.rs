@@ -72,6 +72,7 @@ pub fn generate_paragraph(stream: Vec<PGComponent>) -> String {
             PGComponent::Italics(t) => format!("<i>{}</i>", t),
             PGComponent::Code(t) => format!("<code>{}</code>", t),
             PGComponent::Hyperlink(t, u) => format!("<a href=\"{}\">{}</a>", u, t),
+            PGComponent::Math(t) => format!("\\({}\\)", t),
         };
         para_str.push_str(&pg_str);
     }

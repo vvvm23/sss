@@ -22,7 +22,7 @@ pub enum PGComponent {
     Italics(String),           // * *
     Hyperlink(String, String), // (text, url)
     Code(String),              // Inline code
-    //Math(String),              // Inline math 
+    Math(String),              // Inline math 
 }
 
 /// Enum containing all supported markdown components
@@ -134,9 +134,29 @@ fn parse_paragraph(text: &String) -> MDComponent {
             }
             Some('\\') => {
                 // Escape character
-                current_block.push('\\');
                 match text_chars.next() {
+                    Some('(') => {
+                        if current_block.len() > 0 {
+                            pg_vec.push(PGComponent::Text(current_block));
+                            current_block = "".to_string();
+                        }
+
+                        let mut math_text: String = "".to_string();
+                        let mut last_char = text_chars.next();
+                        loop {
+                            let next_char = text_chars.next();
+                            if let Some('\\') = last_char {
+                                if let Some(')') = next_char {
+                                    break;
+                                }
+                            }
+                            math_text.push(last_char.unwrap());
+                            last_char = next_char;
+                        }
+                        pg_vec.push(PGComponent::Math(math_text));
+                    }
                     Some(c) => {
+                        current_block.push('\\');
                         current_block.push(c);
                     }
                     None => {
