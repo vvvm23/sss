@@ -12,6 +12,7 @@ use toml;
 
 use std::fs;
 use std::io::Write;
+use chrono;
 
 fn convert_file(source_name: &String, target_name: &String, site_cfg: &SiteConfig) {
     let stream = md::parse_md_file(&source_name);
@@ -175,6 +176,7 @@ fn build() -> Result<(), std::io::Error> {
 }
 
 fn add(title: &str, path: &str) -> Result<(), std::io::Error> {
+    let now = chrono::Utc::today();
     print!("Adding new post.. ");
     let mut file = std::fs::OpenOptions::new()
         .write(true)
@@ -184,6 +186,7 @@ fn add(title: &str, path: &str) -> Result<(), std::io::Error> {
     writeln!(file, "\n[[posts]]")?;
     writeln!(file, "{}", format!("title = \"{}\"", title))?;
     writeln!(file, "{}", format!("url = \"posts/{}.md\"", path))?;
+    writeln!(file, "{}", format!("date = \"{}\"", now.format("%d/%m/%Y")))?;
 
     // TODO: If the file exists, maybe don't delete?
     // TODO: Or perhaps a separate command for the above
