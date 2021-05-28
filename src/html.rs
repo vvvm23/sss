@@ -106,7 +106,7 @@ pub fn stream_to_html(
     f.write("<div class=\"content\">".as_bytes())?;
     for mdc in stream {
         match mdc {
-            MDComponent::Heading(d, t) => f.write(format!("<h{}>{}</h{}>", d, t, d).as_bytes())?,
+            MDComponent::Heading(d, t) => f.write(format!("<h{} id=\"{}\">{}</h{}>", d, t.replace(" ", "-"), t, d).as_bytes())?,
             MDComponent::Paragraph(ps) => f.write(generate_paragraph(ps).as_bytes())?,
             MDComponent::Image(t, u) => {
                 std::fs::copy(format!(".{}", &u), format!("{}/{}", pub_dir, &u))?;
